@@ -1,0 +1,82 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'appProducts/css/products.css' %}">
+    <title>{{title}}</title>
+</head>
+<body>
+    <h1>{{title}}</h1>
+
+    <p>{{msg}}</p>
+
+    <form anction="{% url 'products' %}" method="post">
+        {% csrf_token %}
+        
+        <table>
+            {{ form.as_table }}
+        </table>
+
+        <input class="btn" type="submit" value="登録" >
+    </form>
+
+    <table>
+        <tr>
+        {% for column in col %}
+            <th>{{column}}</th>
+        {% endfor %}
+        </tr>
+
+        {% if type == '在庫' %}
+            <!--在庫データ表示--> 
+            {% for item in data %}
+                <tr>
+                    <td>{{item.id}}</td>
+                    <td>{{item.name}}</td>
+                    <td>{{item.price}}</td>
+                    <td>{{item.set_name}}</td>
+                    <td>{{item.stock}}</td>
+                    <td>{{item.owner}}</td>
+                    <td><a href="{% url 'edit' page='products' id=item.id %}">編集</a></td>
+                    <td><a href="{% url 'delete' page='products' id=item.id %}">削除</a></td>
+                </tr>
+            {% endfor %}
+
+        {% elif type == 'セット' %}
+            <!--セットデータ表示--> 
+            {% for item in data %}
+                <tr>
+                    <td>{{item.set_id}}</td>
+                    <td>{{item.set_name}}</td>
+                    <td>{{item.price}}</td>
+                    <td><a href="{% url 'edit' page='sets' id=item.set_id %}">編集</a></td>
+                    <td><a href="{% url 'delete' page='sets' id=item.set_id %}">削除</a></td>
+                </tr>
+            {% endfor %}
+
+        {% else %}
+            <!--売上データ表示--> 
+            {% for item in data %}
+                <tr>
+                    <td>{{item.sales_id}}</td>
+                    <td>{{item.date|date:"Y/m/d"}}</td>
+                    <td>{% if item.type == 0 %}個別{% endif %}
+                        {% if item.type == 1 %}セット{% endif %}</td>
+                    <td>{{item.name}}</td>
+                    <td>{{item.price}}</td>
+                    <td>{{item.count}}</td>
+                    <td><a href="{% url 'edit' page='sales' id=item.sales_id %}">編集</a></td>
+                    <td><a href="{% url 'delete' page='sales' id=item.sales_id %}">削除</a></td>
+                </tr>
+            {% endfor %}
+
+        {% endif %}
+
+    </table>
+
+    <a href="{% url 'index' %}">戻る</a>
+
+</body>
+</html>

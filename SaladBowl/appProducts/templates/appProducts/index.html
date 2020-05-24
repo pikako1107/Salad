@@ -1,0 +1,26 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'appProducts/css/index.css' %}">
+    <title>{{title}}</title>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>{{title}}</h1>
+        <h2>商品管理</h2>
+        <ul>
+            <li class="contents"><a href="{% url goto.0 %}">在庫</a></li>
+            <li class="contents"><a href="{% url goto.1 %}">セット</a></li>
+            <li class="contents"><a href="{% url goto.2 %}">売上</a></li>
+        </ul>
+    </div>
+
+    <a href="{% url 'logout' %}">ログアウト</a>
+
+</body>
+</html>

@@ -1,0 +1,80 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'appProducts/css/products.css' %}">
+    <title>{{title}}</title>
+</head>
+
+<body>
+
+    <h2>{{msg}}</h2>
+
+    <table>
+        {% if type == '在庫' %}
+            <!--在庫データ表示--> 
+            <tr>
+                <th>商品ID</th><td>{{obj.id}}</td>
+            </tr>
+            <tr>
+                <th>セットID</th><td>{{obj.set_id}}</td>
+            </tr>
+            <tr>
+                <th>商品名</th><td>{{obj.name}}</td>
+            </tr>
+            <tr>
+                <th>値段</th><td>{{obj.price}}</td>
+            </tr>
+            <tr>
+                <th>在庫</th><td>{{obj.stock}}</td>
+            </tr>
+            <tr>
+                <th>所持者</th><td>{{obj.owner}}</td>
+            </tr>
+        {% elif type == 'セット' %}
+            <!--セットデータ表示--> 
+            <tr>
+                <th>セットID</th><td>{{obj.set_id}}</td>
+            </tr>
+            <tr>
+                <th>セット名</th><td>{{obj.set_name}}</td>
+            </tr>
+            <tr>
+                <th>値段</th><td>{{obj.price}}</td>
+            </tr>
+        {% else %}
+            <!--売上データ表示-->
+            <tr>
+                <th>売上ID</th><td>{{obj.sales_id}}</td>
+            </tr>
+            <tr>
+                <th>日付</th><td>{{obj.date|date:"Y/m/d"}}</td>
+            </tr>
+            <tr>
+                <th>売上種別</th>
+                <td>{% if obj.type == 0 %}個別{% endif %}
+                    {% if obj.type == 1 %}セット{% endif %}</td>
+            </tr>
+            <tr>
+                <th>商品/セットID</th><td>{{obj.type_id}}</td>
+            </tr>
+            <tr>
+                <th>単価</th><td>{{obj.price}}</td>
+            </tr>
+            <tr>
+                <th>売上個数</th><td>{{obj.count}}</td>
+            </tr>
+        {% endif %}
+    </table>
+
+    <form anction="{{ request.META.HTTP_REFERER }}" method="post">
+        {% csrf_token %}
+        <input class="btn" type="submit" value="削除" >
+    </form>
+
+    <a href="{{request.META.HTTP_REFERER}}">戻る</a>
+
+</body>
+</html>
