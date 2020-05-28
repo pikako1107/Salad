@@ -55,15 +55,14 @@
     <Folder Include="appProducts\" />
     <Folder Include="appProducts\migrations\" />
     <Folder Include="appProducts\static\" />
-    <Folder Include="appProducts\static\appProducts\" />
-    <Folder Include="appProducts\static\appProducts\css\" />
+    <Folder Include="appProducts\static\css\" />
     <Folder Include="appProducts\templates\" />
     <Folder Include="appProducts\templates\appProducts\" />
     <Folder Include="SaladBowl\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="appProducts\static\appProducts\css\index.css" />
-    <Content Include="appProducts\static\appProducts\css\products.css" />
+    <Content Include="appProducts\static\css\index.css" />
+    <Content Include="appProducts\static\css\products.css" />
     <Content Include="appProducts\templates\appProducts\delete.html" />
     <Content Include="appProducts\templates\appProducts\edit.html" />
     <Content Include="appProducts\templates\appProducts\index.html" />
