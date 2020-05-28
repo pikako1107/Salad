@@ -1,4 +1,3 @@
-
 /* header {
     background-color: blueviolet;
     color: white;
@@ -8,13 +7,11 @@
     position: fixed; 
     width: 100%;
 }
-
 .head-title {
     float: left;
     font-size: 20px;
     padding-right: 28px;
 }
-
 .header-list {
     float: left;
     list-style: none;
@@ -22,19 +19,15 @@
     padding: 5px 10px;
     opacity: 1.0;
 }
-
 .header-list:hover {
     opacity: 0.7;
 }
-
 .menu {
     display: none;
 }
-
 .menu-item {
     clear: both;
 }
-
 .open {
     display: block;
 } */

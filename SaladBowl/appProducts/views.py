@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from .forms import productsForm, setsForm, salesForm, productsModelForm, setsModelForm, salesModelForm
 from .models import Products, SetProducts, Sales
@@ -19,7 +20,7 @@ class MyLoginView(LoginView):
 class MyLogoutView(LoginRequiredMixin, LogoutView):
     template_name = "appProducts/logout.html"
 
-
+# グローバル変数
 message = ''
 
 # メインページ表示
@@ -37,7 +38,7 @@ def index(request):
 
 # 在庫ページ表示
 @login_required
-def products(request):
+def products(request, num=1):
 
     # POST送信判定
     if (request.method == 'POST'):
@@ -73,6 +74,9 @@ def products(request):
     # productsテーブルのデータを取得
     data = Products.objects.raw(sql)
 
+    # ページネーション設定
+    page = Paginator(data, 5)
+
     # 列名
     col = ('ID', '商品名', '値段', 'セット', '在庫', '所持者')
     
@@ -82,14 +86,14 @@ def products(request):
             'msg':message,
             'form':productsForm(),
             'col':col,
-            'data':data
+            'data':page.get_page(num),
         }
 
     return render(request, 'appProducts/products.html', params)
 
 # セットページ表示
 @login_required
-def sets(request):
+def sets(request, num=1):
 
     # POST送信判定
     if (request.method == 'POST'):
@@ -116,6 +120,9 @@ def sets(request):
     # データ取得
     data = SetProducts.objects.all()
 
+    # ページネーション設定
+    page = Paginator(data, 5)
+
     # 列名
     col = ('ID', 'セット名', '値段')
 
@@ -125,13 +132,13 @@ def sets(request):
             'msg':message,
             'form':setsForm(),
             'col':col,
-            'data':data
+            'data':page.get_page(num),
         }
     return render(request, 'appProducts/products.html', params)
 
 # 売上ページ表示
 @login_required
-def sales(request):
+def sales(request, num=1):
 
     # POST送信判定
     if (request.method == 'POST'):
@@ -181,6 +188,9 @@ def sales(request):
     # データ取得
     data = Sales.objects.raw(sql)
 
+    # ページネーション設定
+    page = Paginator(data, 5)
+
     # 列名
     col = ('ID', '日付', '売上種別','商品/セット名','単価','売上個数')
 
@@ -190,7 +200,7 @@ def sales(request):
             'msg':message,
             'form':salesForm(),
             'col':col,
-            'data':data
+            'data':page.get_page(num),
         }
     return render(request, 'appProducts/products.html', params)
 
