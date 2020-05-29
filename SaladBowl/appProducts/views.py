@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
-from .forms import productsForm, setsForm, salesForm, productsModelForm, setsModelForm, salesModelForm, productsSearchForm
+from .forms import productsForm, setsForm, salesForm, productsModelForm, setsModelForm, salesModelForm, productsSearchForm, setsSearchForm, salesSearchForm
 from .models import Products, SetProducts, Sales
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -128,30 +128,64 @@ def products(request, num=1):
 @login_required
 def sets(request, num=1):
 
+    # リスト初期化
+    whereSQL = []
+
     # POST送信判定
     if (request.method == 'POST'):
+
+        # ボタン判定
+        if 'input' in request.POST:
         # IDの最大値を取得
-        maxID = SetProducts.objects.aggregate(Max('set_id'))
+            maxID = SetProducts.objects.aggregate(Max('set_id'))
 
-        # 登録するIDを取得(最大値+1)
-        insertID = maxID['set_id__max'] + 1
+            # 登録するIDを取得(最大値+1)
+            insertID = maxID['set_id__max'] + 1
 
-        # 登録関数呼び出し
-        dictData = create(request, 1)
+            # 登録関数呼び出し
+            dictData = create(request, 1)
 
-        # インスタンス作成
-        insertData = SetProducts(set_id = insertID,
-                                 set_name = dictData['セット名'],
-                                 price = dictData['値段'])
+            # インスタンス作成
+            insertData = SetProducts(set_id = insertID,
+                                     set_name = dictData['セット名'],
+                                     price = dictData['値段'])
 
-        # 保存
-        insertData.save()
+            # 保存
+            insertData.save()
 
-        global message
-        message = "データを登録しました。"
+            global message
+            message = "データを登録しました。"
+
+        else:  
+            # 検索処理
+            whereSQL = search(request, 1)
+
+            sql = "SELECT * FROM set_products "
 
     # データ取得
-    data = SetProducts.objects.all()
+    if whereSQL:
+        # 条件を追加
+        sql += ' WHERE '
+
+        # ループをカウント
+        i = 0
+
+        for SQL in whereSQL:
+            if i == 0:
+                # ループ一回目
+                sql += SQL
+            else:
+                # ループ二回目以降
+                sql += 'AND ' + SQL
+
+            # カウントアップ
+            i += 1
+
+        sql += ';'
+        data = SetProducts.objects.raw(sql)
+
+    else:
+        data = SetProducts.objects.all()
 
     # ページネーション設定
     page = Paginator(data, 5)
@@ -163,7 +197,8 @@ def sets(request, num=1):
             'title':'さらぼー管理/セット',
             'type':'セット',
             'msg':message,
-            'form':setsForm(),
+            'inputForm':setsForm(),
+            'searchForm':setsSearchForm(),
             'col':col,
             'data':page.get_page(num),
         }
@@ -173,36 +208,45 @@ def sets(request, num=1):
 @login_required
 def sales(request, num=1):
 
+    # リスト初期化
+    whereSQL = []
+
     # POST送信判定
     if (request.method == 'POST'):
-        # IDの最大値を取得
-        maxID = Sales.objects.aggregate(Max('sales_id'))
 
-        # 登録するIDを取得(最大値+1)
-        insertID = maxID['sales_id__max'] + 1
+        # ボタン判定
+        if 'input' in request.POST:
+            # IDの最大値を取得
+            maxID = Sales.objects.aggregate(Max('sales_id'))
 
-        # 登録関数呼び出し
-        dictData = create(request, 2)
+            # 登録するIDを取得(最大値+1)
+            insertID = maxID['sales_id__max'] + 1
 
-        # インスタンス作成
-        insertData = Sales(sales_id = insertID,
-                           date = dictData['日付'],
-                           type = dictData['売上種別'],
-                           type_id = dictData['売上商品ID'],
-                           price = dictData['単価'],
-                           count = dictData['売上個数'])
+            # 登録関数呼び出し
+            dictData = create(request, 2)
 
-        # 保存
-        insertData.save()
+            # インスタンス作成
+            insertData = Sales(sales_id = insertID,
+                               date = dictData['日付'],
+                               type = dictData['売上種別'],
+                               type_id = dictData['売上商品ID'],
+                               price = dictData['単価'],
+                               count = dictData['売上個数'])
 
-        # 在庫から売り上げた個数を引く
-        stockCount(int(dictData['売上種別']), 
-                   int(dictData['売上商品ID']), 
-                   int(dictData['売上個数']))
+            # 保存
+            insertData.save()
 
-        global message
-        message = "データを登録しました。"
+            # 在庫から売り上げた個数を引く
+            stockCount(int(dictData['売上種別']), 
+                       int(dictData['売上商品ID']), 
+                       int(dictData['売上個数']))
 
+            global message
+            message = "データを登録しました。"
+
+        else:
+            # 検索処理
+            whereSQL = search(request, 2)
 
     # 売上データ取得SQL
     sql = 'SELECT s.sales_id, s.date, s.type, p.name, s.price, s.count '
@@ -210,12 +254,22 @@ def sales(request, num=1):
     sql += 'INNER JOIN products AS p '
     sql += 'ON s.type_id = p.id '
     sql += 'WHERE s.type = 0 '
+
+    if whereSQL:
+        for SQL in whereSQL:
+            sql += 'AND ' + SQL
+
     sql += 'UNION '
     sql += 'SELECT s.sales_id, s.date, s.type, p.set_name, s.price, s.count '
     sql += 'FROM sales AS s '
     sql += 'INNER JOIN set_products AS p '
     sql += 'ON s.type_id = p.set_id '
     sql += 'WHERE s.type = 1 '
+    
+    if whereSQL:
+        for SQL in whereSQL:
+            sql += 'AND ' + SQL
+
     sql += 'ORDER BY sales_id;'
 
     # データ取得
@@ -231,7 +285,8 @@ def sales(request, num=1):
             'title':'さらぼー管理/売上',
             'type':'売上',
             'msg':message,
-            'form':salesForm(),
+            'inputForm':salesForm(),
+            'searchForm':salesSearchForm(),
             'col':col,
             'data':page.get_page(num),
         }
@@ -470,6 +525,66 @@ def search(request, mode):
                 's.set_id':set_id,
                 }
 
+    elif mode == 1:
+        # セットテーブル
+        # 文字列検索対象
+        nameWhere = request.POST['choiceName']      # セット名検索条件
+
+        # 辞書に格納{検索項目：検索条件(0:完全一致、1:前方一致、2:後方一致)}
+        strData = {
+                'set_name':nameWhere,
+            }
+
+        # 数値検索対象
+        priceWhere = request.POST['choicePrice']    # 値段検索条件
+
+        # 辞書に格納{検索項目：検索条件(0:一致、1:以上、2:以下)}
+        intData = {
+                'price':priceWhere,
+            }
+
+        # その他はないのでダミー
+        eachData = {}
+
+    else:
+        # 売上テーブル
+        table = "s."
+
+        # 文字列はないのでダミー
+        strData = {}
+
+        # 数値検索対象
+        priceWhere = request.POST['choicePrice']    # 値段検索条件
+        countWhere = request.POST['choiceCount']    # 個数検索条件
+
+        # 辞書に格納{検索項目：検索条件(0:一致、1:以上、2:以下)}
+        intData = {
+                'price':priceWhere,
+                'count':countWhere,
+            }
+
+        # その他検索対象
+        date = request.POST['date']                     # 日付検索値
+        
+        if request.POST['sale_choice'] == '2':
+            # 2は検索しない
+            sale_choice = ''
+        else:
+            sale_choice = request.POST['sale_choice']   # 売上種別検索値
+
+        if request.POST['name'] == '0':
+            # 0は検索しない
+            nameID = ''
+        else:
+            nameID = request.POST['name']               # 商品ID
+
+        # 辞書に格納{検索項目：検索値}
+        eachData = {
+                's.date':date,
+                's.type':sale_choice,
+                's.type_id':nameID,
+                }
+
 
     # 文字列検索SQL作成
     strSQL = strSearch(request, strData, table)
@@ -493,7 +608,7 @@ def search(request, mode):
           table   メインに取得するテーブル
     戻り値 文字列検索SQL(リスト)
 '''
-def strSearch(request, data, table):
+def strSearch(request, data, table=''):
     # 戻り値の初期化
     ans = []
 
@@ -525,7 +640,7 @@ def strSearch(request, data, table):
           table   メインに取得するテーブル
     戻り値 数値検索SQL(リスト)
 '''
-def intSearch(request, data, table):
+def intSearch(request, data, table=''):
     # 戻り値の初期化
     ans = []
 

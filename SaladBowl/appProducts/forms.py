@@ -56,7 +56,9 @@ class salesForm(forms.Form):
             (1, "セット")
         ]
 
-    sale_choice = forms.ChoiceField(label="売上種別", choices=sale_type, widget=forms.RadioSelect())
+    sale_choice = forms.ChoiceField(label="売上種別", 
+                                    choices=sale_type, 
+                                    widget=forms.RadioSelect())
     
     # SQL
     sql =   "SELECT id, name "
@@ -147,3 +149,81 @@ class productsSearchForm(forms.Form):
                                     required=False,
                                     initial=[0, '完全一致'],
                                     widget=forms.RadioSelect()) # 所持者検索項目
+
+# セット検索フォーム
+class setsSearchForm(forms.Form):
+
+    set_name = forms.CharField(label="セット名", 
+                               max_length=45,
+                               required=False)                      # セット名
+
+    choiceName = forms.ChoiceField(label="商品検索条件",
+                                    choices=nameRadioData,
+                                    required=False,
+                                    initial=[0, '完全一致'],
+                                    widget=forms.RadioSelect())     # セット名検索項目
+
+    price = forms.IntegerField(label="値段", required=False)        # 値段
+
+    choicePrice = forms.ChoiceField(label="値段検索条件",
+                                    choices=intRadioData,
+                                    required=False,
+                                    initial=[0, '一致'],
+                                    widget=forms.RadioSelect())     # 値段検索項目
+
+# 売上検索フォーム
+class salesSearchForm(forms.Form):
+
+    date = forms.DateField(label="日付", required=False)      # 売上日付
+    
+    # 売上種別
+    sale_type = [
+            (2, "両方"),
+            (0, "個別"),
+            (1, "セット"),
+        ]
+
+    sale_choice = forms.ChoiceField(label="売上種別", 
+                                    choices=sale_type, 
+                                    required=False,
+                                    initial=[2, "両方"],
+                                    widget=forms.RadioSelect())
+    
+    # SQL
+    sql =   "SELECT id, name "
+    sql +=  "FROM products "
+    sql +=  "UNION "
+    sql +=  "SELECT set_id, set_name "
+    sql +=  "FROM set_products;"
+
+    # 売上商品
+    sale_products = Products.objects.raw(sql)
+
+    # リストを初期化
+    list_products = [(0,'未選択')]
+
+    # 売上商品をタプルに格納
+    for item in sale_products:
+        list_products.append((item.id, item.name))
+
+    
+    # 売上商品
+    name = forms.ChoiceField(label="売上商品", 
+                             choices=list_products,
+                             required=False)
+
+    price = forms.IntegerField(label="単価", required=False)          # 単価
+
+    choicePrice = forms.ChoiceField(label="値段検索条件",
+                                    choices=intRadioData,
+                                    required=False,
+                                    initial=[0, '一致'],
+                                    widget=forms.RadioSelect())       # 値段検索項目
+
+    count = forms.IntegerField(label="売上個数", required=False)      # 売上個数
+
+    choiceCount = forms.ChoiceField(label="個数検索条件",
+                                    choices=intRadioData,
+                                    required=False,
+                                    initial=[0, '一致'],
+                                    widget=forms.RadioSelect())       # 個数検索項目
