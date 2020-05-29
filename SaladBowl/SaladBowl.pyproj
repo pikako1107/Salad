@@ -56,6 +56,7 @@
     <Folder Include="appProducts\migrations\" />
     <Folder Include="appProducts\static\" />
     <Folder Include="appProducts\static\css\" />
+    <Folder Include="appProducts\static\js\" />
     <Folder Include="appProducts\templates\" />
     <Folder Include="appProducts\templates\appProducts\" />
     <Folder Include="SaladBowl\" />
@@ -63,6 +64,7 @@
   <ItemGroup>
     <Content Include="appProducts\static\css\index.css" />
     <Content Include="appProducts\static\css\products.css" />
+    <Content Include="appProducts\static\js\products.js" />
     <Content Include="appProducts\templates\appProducts\delete.html" />
     <Content Include="appProducts\templates\appProducts\edit.html" />
     <Content Include="appProducts\templates\appProducts\index.html" />

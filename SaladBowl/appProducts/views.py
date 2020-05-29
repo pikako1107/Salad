@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
-from .forms import productsForm, setsForm, salesForm, productsModelForm, setsModelForm, salesModelForm
+from .forms import productsForm, setsForm, salesForm, productsModelForm, setsModelForm, salesModelForm, productsSearchForm
 from .models import Products, SetProducts, Sales
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -40,36 +40,68 @@ def index(request):
 @login_required
 def products(request, num=1):
 
+    # リスト初期化
+    whereSQL = []
+
     # POST送信判定
     if (request.method == 'POST'):
-        # IDの最大値を取得
-        maxID = Products.objects.aggregate(Max('id'))
 
-        # 登録するIDを取得(最大値+1)
-        insertID = maxID['id__max'] + 1
+        # ボタン判定
+        if 'input' in request.POST:
+            # 登録処理
+            # IDの最大値を取得
+            maxID = Products.objects.aggregate(Max('id'))
 
-        # 登録関数呼び出し
-        dictData = create(request, 0)
+            # 登録するIDを取得(最大値+1)
+            insertID = maxID['id__max'] + 1
 
-        # インスタンス作成
-        insertData = Products(id = insertID,
-                              set_id = dictData['セットID'],
-                              name = dictData['商品名'],
-                              price = dictData['値段'],
-                              stock = dictData['在庫'],
-                              owner = dictData['所持者'])
+            # 登録関数呼び出し
+            dictData = create(request, 0)
 
-        # 保存
-        insertData.save()
+            # インスタンス作成
+            insertData = Products(id = insertID,
+                                  set_id = dictData['セットID'],
+                                  name = dictData['商品名'],
+                                  price = dictData['値段'],
+                                  stock = dictData['在庫'],
+                                  owner = dictData['所持者'])
 
-        global message
-        message = "データを登録しました。"
+            # 保存
+            insertData.save()
+
+            global message
+            message = "データを登録しました。"
+
+        else:
+            # 検索処理
+            whereSQL = search(request, 0)
 
     # SQL
     sql = 'SELECT p.id, p.name, p.price, s.set_name, p.stock, p.owner '
     sql += 'FROM products AS p '
     sql += 'LEFT OUTER JOIN set_products AS s '
-    sql += 'ON p.set_id = s.set_id;'
+    sql += 'ON p.set_id = s.set_id'
+
+    if whereSQL:
+        # 条件を追加
+        sql += ' WHERE '
+
+        # ループをカウント
+        i = 0
+
+        for SQL in whereSQL:
+            if i == 0:
+                # ループ一回目
+                sql += SQL
+            else:
+                # ループ二回目以降
+                sql += 'AND ' + SQL
+
+            # カウントアップ
+            i += 1
+
+    # 末尾にセミコロン追加
+    sql += ';'
 
     # productsテーブルのデータを取得
     data = Products.objects.raw(sql)
@@ -84,7 +116,8 @@ def products(request, num=1):
             'title':'さらぼー管理/在庫',
             'type':'在庫',
             'msg':message,
-            'form':productsForm(),
+            'inputForm':productsForm(),
+            'searchForm':productsSearchForm(),
             'col':col,
             'data':page.get_page(num),
         }
@@ -209,8 +242,7 @@ def sales(request, num=1):
 def edit(request, page, id):
 
     # 変数初期化
-    global message
-    message = 'ID:' + str(id) + 'のデータを編集します'
+    info_message = 'ID:' + str(id) + 'のデータを編集します'
     type = ''
 
     # ページごとにテーブルを変更
@@ -245,6 +277,7 @@ def edit(request, page, id):
             editData.save()
 
         # メッセージを設定
+        global message
         message = 'データを更新しました。'
 
         # リダイレクト
@@ -252,7 +285,7 @@ def edit(request, page, id):
 
     params = {
             'title':type + '更新',
-            'msg':message,
+            'info':info_message,
             'form':sent_form,
         }
 
@@ -263,8 +296,7 @@ def edit(request, page, id):
 def delete(request, page, id):
         
     # 変数初期化
-    global message
-    message = 'ID:' + str(id) + 'のデータを削除します'
+    info_message = 'ID:' + str(id) + 'のデータを削除します'
     type = ''
 
     # ページごとにテーブルを変更
@@ -286,6 +318,7 @@ def delete(request, page, id):
         obj.delete()
 
         # メッセージを設定
+        global message
         message = 'データを削除しました。'
 
         # リダイレクト
@@ -294,7 +327,7 @@ def delete(request, page, id):
     params = {
             'title':type + '削除',
             'type':type,
-            'msg':message,
+            'info':info_message,
             'obj':obj,
         }
 
@@ -390,4 +423,150 @@ def stockCount(type, type_id, count):
             list.save()
 
 
+''' データの検索
+    引数: request
+          mode  0:商品テーブル検索
+                1:セットテーブル検索
+                2:売上テーブル検索
+    戻り値 WHERE句SQL(リスト)
+'''
+def search(request, mode): 
+    # 戻り値の初期化
+    ans = []
 
+    # 変数初期化
+    table = ""
+
+    # 処理わけ
+    if mode == 0:
+        # メイン取得テーブル
+        table = "p."
+
+        # 文字列検索対象
+        nameWhere = request.POST['choiceName']      # 商品名検索条件
+        ownerWhere = request.POST['choiceOwner']    # 所持者検索条件
+
+        # 辞書に格納{検索項目：検索条件(0:完全一致、1:前方一致、2:後方一致)}
+        strData = {
+                'name':nameWhere,
+                'owner':ownerWhere,
+            }
+
+        # 数値検索対象
+        priceWhere = request.POST['choicePrice']    # 値段検索条件
+        stockWhere = request.POST['choiceStock']    # 在庫検索条件
+
+        # 辞書に格納{検索項目：検索条件(0:一致、1:以上、2:以下)}
+        intData = {
+                'price':priceWhere,
+                'stock':stockWhere,
+            }
+
+        # その他検索対象
+        set_id = request.POST['set_id'] # セットID検索値
+
+        # 辞書に格納{検索項目：検索値}
+        eachData = {
+                's.set_id':set_id,
+                }
+
+
+    # 文字列検索SQL作成
+    strSQL = strSearch(request, strData, table)
+
+    # 数値検索SQL作成
+    intSQL = intSearch(request, intData, table)
+
+    # その他検索SQL作成
+    eachSQL = eachSearch(eachData)
+
+    # SQLリスト結合
+    ans = strSQL + intSQL + eachSQL
+
+    # 戻り値を設定
+    return ans
+
+
+''' データの検索(文字列)
+    引数: request
+          data　  文字列検索データ辞書
+          table   メインに取得するテーブル
+    戻り値 文字列検索SQL(リスト)
+'''
+def strSearch(request, data, table):
+    # 戻り値の初期化
+    ans = []
+
+    # データ数分ループ
+    for key in data:
+        # 空文字(値が入力されていない)は飛ばす
+        if request.POST[key] == '':
+            continue
+        else:
+            # 検索条件により処理わけ
+            if data[key] == '0':
+                # 完全一致
+                ans.append(table + key + " = '" + request.POST[key] + "' ")
+
+            elif data[key] == '1':
+                # 前方一致
+                ans.append(table + key + " LIKE '" + request.POST[key] + "%' ")
+
+            else:
+                # 後方一致
+                ans.append(table + key + " LIKE '%" + request.POST[key] + "' ")
+
+    # 戻り値を設定
+    return ans
+
+''' データの検索(数値)
+    引数: request
+          data　  数値検索データ辞書
+          table   メインに取得するテーブル
+    戻り値 数値検索SQL(リスト)
+'''
+def intSearch(request, data, table):
+    # 戻り値の初期化
+    ans = []
+
+    # データ数分ループ
+    for key in data:
+        # 空文字(値が入力されていない)は飛ばす
+        if request.POST[key] == '':
+            continue
+        else:
+            # 検索条件により処理わけ
+            if data[key] == '0':
+                # 一致
+                ans.append(table + key + ' = ' + request.POST[key] + ' ')
+
+            elif data[key] == '1':
+                # 以上
+                ans.append(table + key + ' >= ' + request.POST[key] + ' ')
+
+            else:
+                # 以下
+                ans.append(table + key + ' <= ' + request.POST[key] + ' ')
+
+    # 戻り値を設定
+    return ans
+
+''' データの検索(一致のみ)
+    引数: data　検索データ辞書
+    戻り値 検索SQL(リスト)
+'''
+def eachSearch(data):
+    # 戻り値の初期化
+    ans = []
+
+    # データ数分ループ
+    for key in data:
+        # 空文字(値が入力されていない)は飛ばす
+        if data[key] == '':
+            continue
+        else:
+            # 値一致のみ
+            ans.append(key + ' = ' + data[key] + ' ')
+
+    # 戻り値を設定
+    return ans

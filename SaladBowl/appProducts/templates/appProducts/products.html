@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{% static 'css/products.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <title>{{title}}</title>
 </head>
 <body>
@@ -12,14 +13,30 @@
 
     <p>{{msg}}</p>
 
-    <form anction="{% url 'products' %}" method="post">
+    <!-- 検索 or 登録 -->
+    <input type="radio" name="select" value="search" checked>検索
+    <input type="radio" name="select" value="input">登録
+
+    <!-- 登録フォーム表示 -->
+    <form class="input_form" anction="{% url 'products' %}" method="post">
         {% csrf_token %}
         
         <table>
-            {{ form.as_table }}
+            {{ inputForm.as_table }}
         </table>
 
-        <input class="btn" type="submit" value="登録" >
+        <input class="btn" type="submit" name="input" value="登録" >
+    </form>
+
+    <!-- 検索フォーム表示 -->
+    <form class="search_form" anction="{% url 'products' %}" method="post">
+        {% csrf_token %}
+        
+        <table>
+            {{ searchForm.as_table }}
+        </table>
+
+        <input class="btn" type="submit" name="search" value="検索" >
     </form>
 
     <table>
@@ -93,6 +110,8 @@
     </div>
 
     <a class="return" href="{% url 'index' %}">戻る</a>
+
+    <script src="{% static 'js/products.js' %}"></script>
 
 </body>
 </html>

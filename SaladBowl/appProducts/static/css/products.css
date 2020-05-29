@@ -31,3 +31,11 @@ table tr td {
     display: block;
     margin-top: 15px;
 }
+
+ul {
+    list-style-type: none;
+}
+
+.input_form {
+    display: none;
+}
