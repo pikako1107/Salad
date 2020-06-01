@@ -32,10 +32,59 @@
     display: block;
 } */
 
+* {
+    box-sizing: border-box;
+}
+
 body {
     padding-left: 15px;
 }
 
 h2 {
     margin-bottom: -10px;
+}
+
+@media(max-width: 480px) {
+    form {
+        text-align: center;
+        font-size: 20px;
+    }
+
+    input {
+        font-size: 20px;
+    }
+
+    button {
+        margin: 0 auto;
+        font-size: 20px;
+    }
+
+    body {
+        max-width: 100%;
+        text-align: center;
+    }
+
+    h1 {
+        font-size: 40px;
+    }
+
+    h2 {
+        font-size: 30px;
+    }
+
+    ul {
+        list-style: none;
+        padding-left: 0px;
+    }
+
+    .contents {
+        width: 100px;
+        margin: 0 auto;
+        font-size: 25px;
+        padding-bottom: 5px;
+    }
+
+    .logout {
+        font-size: 20px;
+    }
 }

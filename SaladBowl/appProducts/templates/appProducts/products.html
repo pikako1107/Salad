@@ -14,8 +14,8 @@
     <p>{{msg}}</p>
 
     <!-- 検索 or 登録 -->
-    <input type="radio" name="select" value="search" checked>検索
-    <input type="radio" name="select" value="input">登録
+    <input class="check" type="radio" name="select" value="search" checked>検索
+    <input class="check" type="radio" name="select" value="input">登録
 
     <!-- 登録フォーム表示 -->
     <form class="input_form" anction="{% url 'products' %}" method="post">
@@ -39,23 +39,23 @@
         <input class="btn" type="submit" name="search" value="検索" >
     </form>
 
-    <table>
-        <tr>
-        {% for column in col %}
-            <th>{{column}}</th>
-        {% endfor %}
+    <table class="data-table">
+        <tr class="thead">
+            {% for column in col %}
+                <th>{{column}}</th>
+            {% endfor %}
         </tr>
 
         {% if type == '在庫' %}
             <!--在庫データ表示--> 
             {% for item in data %}
                 <tr>
-                    <td>{{item.id}}</td>
-                    <td>{{item.name}}</td>
-                    <td>{{item.price}}</td>
-                    <td>{{item.set_name}}</td>
-                    <td>{{item.stock}}</td>
-                    <td>{{item.owner}}</td>
+                    <td class="data-id">{{item.id}}</td>
+                    <td data-label="商品名">{{item.name}}</td>
+                    <td data-label="値段">{{item.price}}</td>
+                    <td data-label="セット">{{item.set_name}}</td>
+                    <td data-label="在庫">{{item.stock}}</td>
+                    <td data-label="所持者">{{item.owner}}</td>
                     <td><a href="{% url 'edit' page='products' id=item.id %}">編集</a></td>
                     <td><a href="{% url 'delete' page='products' id=item.id %}">削除</a></td>
                 </tr>
@@ -65,9 +65,9 @@
             <!--セットデータ表示--> 
             {% for item in data %}
                 <tr>
-                    <td>{{item.set_id}}</td>
-                    <td>{{item.set_name}}</td>
-                    <td>{{item.price}}</td>
+                    <td class="data-id">{{item.set_id}}</td>
+                    <td data-label="セット名">{{item.set_name}}</td>
+                    <td data-label="値段">{{item.price}}</td>
                     <td><a href="{% url 'edit' page='sets' id=item.set_id %}">編集</a></td>
                     <td><a href="{% url 'delete' page='sets' id=item.set_id %}">削除</a></td>
                 </tr>
@@ -77,13 +77,13 @@
             <!--売上データ表示--> 
             {% for item in data %}
                 <tr>
-                    <td>{{item.sales_id}}</td>
-                    <td>{{item.date|date:"Y/m/d"}}</td>
-                    <td>{% if item.type == 0 %}個別{% endif %}
-                        {% if item.type == 1 %}セット{% endif %}</td>
-                    <td>{{item.name}}</td>
-                    <td>{{item.price}}</td>
-                    <td>{{item.count}}</td>
+                    <td class="data-id">{{item.sales_id}}</td>
+                    <td data-label="日付">{{item.date|date:"Y/m/d"}}</td>
+                    <td data-label="売上種別">{% if item.type == 0 %}個別{% endif %}
+                                                {% if item.type == 1 %}セット{% endif %}</td>
+                    <td data-label="商品名/セット名">{{item.name}}</td>
+                    <td data-label="値段">{{item.price}}</td>
+                    <td data-label="売上個数">{{item.count}}</td>
                     <td><a href="{% url 'edit' page='sales' id=item.sales_id %}">編集</a></td>
                     <td><a href="{% url 'delete' page='sales' id=item.sales_id %}">削除</a></td>
                 </tr>
