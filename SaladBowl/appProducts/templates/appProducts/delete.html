@@ -16,55 +16,55 @@
         {% if type == '在庫' %}
             <!--在庫データ表示--> 
             <tr>
-                <th>商品ID</th><td>{{obj.id}}</td>
+                <th class="del_header">商品ID</th><td class="del_item">{{obj.id}}</td>
             </tr>
             <tr>
-                <th>セットID</th><td>{{obj.set_id}}</td>
+                <th class="del_header">セットID</th><td class="del_item">{{obj.set_id}}</td>
             </tr>
             <tr>
-                <th>商品名</th><td>{{obj.name}}</td>
+                <th class="del_header">商品名</th><td class="del_item">{{obj.name}}</td>
             </tr>
             <tr>
-                <th>値段</th><td>{{obj.price}}</td>
+                <th class="del_header">値段</th><td class="del_item">{{obj.price}}</td>
             </tr>
             <tr>
-                <th>在庫</th><td>{{obj.stock}}</td>
+                <th class="del_header">在庫</th><td class="del_item">{{obj.stock}}</td>
             </tr>
             <tr>
-                <th>所持者</th><td>{{obj.owner}}</td>
+                <th class="del_header">所持者</th><td class="del_item">{{obj.owner}}</td>
             </tr>
         {% elif type == 'セット' %}
             <!--セットデータ表示--> 
             <tr>
-                <th>セットID</th><td>{{obj.set_id}}</td>
+                <th class="del_header">セットID</th><td class="del_item">{{obj.set_id}}</td>
             </tr>
             <tr>
-                <th>セット名</th><td>{{obj.set_name}}</td>
+                <th class="del_header">セット名</th><td class="del_item">{{obj.set_name}}</td>
             </tr>
             <tr>
-                <th>値段</th><td>{{obj.price}}</td>
+                <th class="del_header">値段</th><td class="del_item">{{obj.price}}</td>
             </tr>
         {% else %}
             <!--売上データ表示-->
             <tr>
-                <th>売上ID</th><td>{{obj.sales_id}}</td>
+                <th class="del_header">売上ID</th><td class="del_item">{{obj.sales_id}}</td>
             </tr>
             <tr>
-                <th>日付</th><td>{{obj.date|date:"Y/m/d"}}</td>
+                <th class="del_header">日付</th><td class="del_item">{{obj.date|date:"Y/m/d"}}</td>
             </tr>
             <tr>
-                <th>売上種別</th>
-                <td>{% if obj.type == 0 %}個別{% endif %}
+                <th class="del_header">売上種別</th>
+                <td class="del_item">{% if obj.type == 0 %}個別{% endif %}
                     {% if obj.type == 1 %}セット{% endif %}</td>
             </tr>
             <tr>
-                <th>商品/セットID</th><td>{{obj.type_id}}</td>
+                <th class="del_header">商品/セットID</th><td class="del_item">{{obj.type_id}}</td>
             </tr>
             <tr>
-                <th>単価</th><td>{{obj.price}}</td>
+                <th class="del_header">単価</th><td class="del_item">{{obj.price}}</td>
             </tr>
             <tr>
-                <th>売上個数</th><td>{{obj.count}}</td>
+                <th class="del_header">売上個数</th><td class="del_item">{{obj.count}}</td>
             </tr>
         {% endif %}
     </table>

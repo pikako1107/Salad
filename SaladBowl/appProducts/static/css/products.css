@@ -95,7 +95,7 @@ ul {
     }
 
     .data-table {
-        width: 80%;
+        width: 100%;
     }
 
     .data-table tr {
@@ -125,6 +125,14 @@ ul {
         float: left;
         font-weight: bold;
         margin-right: 10px;
+    }
+
+    .del_header {
+        width: 30%;
+    }
+
+    .del_item {
+        width: 70%;
     }
 }
 
