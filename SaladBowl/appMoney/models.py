@@ -27,6 +27,7 @@ class Payment_detail(models.Model):
     activity_id = models.IntegerField()
     place = models.IntegerField()
     content = models.IntegerField()
+    work_id = models.IntegerField()
     hour = models.IntegerField()
     money = models.DecimalField(max_digits=10, decimal_places=0)
 

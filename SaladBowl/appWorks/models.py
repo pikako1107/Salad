@@ -8,4 +8,4 @@ class Works(models.Model):
     editor = models.TextField(max_length=45)
     illustrator = models.TextField(max_length=45)
     animator = models.TextField(max_length=45)
-    completion_date = models.DateField()
+    completion = models.BooleanField(default=False)
