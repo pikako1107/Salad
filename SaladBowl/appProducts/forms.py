@@ -16,14 +16,6 @@ intRadioData = [
         (2, '以下')
     ]                       # 数値検索項目
 
-# ログインフォーム
-class LoginForm(auth_forms.AuthenticationForm):
-    '''ログインフォーム'''
-    def __init__(self, *args, **kw):
-        super().__init__(*args, **kw)
-        for field in self.fields.values():
-            field.widget.attrs['placeholder'] = field.label
-
 # 商品フォーム
 class productsForm(forms.Form):
     
@@ -83,6 +75,15 @@ class salesForm(forms.Form):
 
     price = forms.IntegerField(label="単価")                          # 単価
     count = forms.IntegerField(label="売上個数")                      # 売上個数
+
+    # 特記事項リスト
+    list_ohter = [
+                (0, "なし"),
+                (1, "ダウンロード販売"),
+            ]
+    
+    # 特記事項
+    other = forms.ChoiceField(label="特記事項", choices=list_ohter)                         
 
 
 # 商品モデルフォーム
@@ -227,3 +228,13 @@ class salesSearchForm(forms.Form):
                                     required=False,
                                     initial=[0, '一致'],
                                     widget=forms.RadioSelect())       # 個数検索項目
+
+    # 検索用リスト(特記事項)
+    list_other = [
+            (0, "未選択"),
+            (1, "ダウンロード販売"),
+        ]
+    
+    choiceOther = forms.ChoiceField(label="特記事項検索",
+                                    choices=list_other,
+                                    required=False)                   # ダウンロード販売検索

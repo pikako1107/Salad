@@ -3,7 +3,6 @@ import appProducts.views
 from django.urls import path, include
 
 urlpatterns = [
-    path('', appProducts.views.index, name='index'),
     path('products/', appProducts.views.products, name='products'),
     path('products/<int:num>', appProducts.views.products, name='products'),
     path('sets/', appProducts.views.sets, name='sets'),

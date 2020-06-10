@@ -4,37 +4,13 @@ from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from .forms import productsForm, setsForm, salesForm, productsModelForm, setsModelForm, salesModelForm, productsSearchForm, setsSearchForm, salesSearchForm
 from .models import Products, SetProducts, Sales
-from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Max
 from django.shortcuts import redirect
 from . import forms
 
 # Create your views here.
-# ログインクラス
-class MyLoginView(LoginView):
-    form_class = forms.LoginForm
-    template_name = "appProducts/login.html"
-
-# ログアウトクラス
-class MyLogoutView(LoginRequiredMixin, LogoutView):
-    template_name = "appProducts/logout.html"
-
 # グローバル変数
 message = ''
-
-# メインページ表示
-@login_required
-def index(request):
-
-    # ページURL
-    goto = ('products', 'sets', 'sales')
-
-    params = {
-            'title':'さらぼー管理ツール',
-            'goto':goto
-        }
-    return render(request, 'appProducts/index.html', params)
 
 # 在庫ページ表示
 @login_required
@@ -231,15 +207,18 @@ def sales(request, num=1):
                                type = dictData['売上種別'],
                                type_id = dictData['売上商品ID'],
                                price = dictData['単価'],
-                               count = dictData['売上個数'])
+                               count = dictData['売上個数'],
+                               other = dictData['特記事項'])
 
             # 保存
             insertData.save()
 
-            # 在庫から売り上げた個数を引く
-            stockCount(int(dictData['売上種別']), 
-                       int(dictData['売上商品ID']), 
-                       int(dictData['売上個数']))
+            # ダウンロード販売は除く
+            if dictData['特記事項'] != 'ダウンロード販売':
+                # 在庫から売り上げた個数を引く
+                stockCount(int(dictData['売上種別']), 
+                           int(dictData['売上商品ID']), 
+                           int(dictData['売上個数']))
 
             global message
             message = "データを登録しました。"
@@ -249,7 +228,7 @@ def sales(request, num=1):
             whereSQL = search(request, 2)
 
     # 売上データ取得SQL
-    sql = 'SELECT s.sales_id, s.date, s.type, p.name, s.price, s.count '
+    sql = 'SELECT s.sales_id, s.date, s.type, p.name, s.price, s.count, s.other '
     sql += 'FROM sales AS s '
     sql += 'INNER JOIN products AS p '
     sql += 'ON s.type_id = p.id '
@@ -260,7 +239,7 @@ def sales(request, num=1):
             sql += 'AND ' + SQL
 
     sql += 'UNION '
-    sql += 'SELECT s.sales_id, s.date, s.type, p.set_name, s.price, s.count '
+    sql += 'SELECT s.sales_id, s.date, s.type, p.set_name, s.price, s.count, s.other '
     sql += 'FROM sales AS s '
     sql += 'INNER JOIN set_products AS p '
     sql += 'ON s.type_id = p.set_id '
@@ -279,7 +258,7 @@ def sales(request, num=1):
     page = Paginator(data, 5)
 
     # 列名
-    col = ('ID', '日付', '売上種別','商品/セット名','単価','売上個数')
+    col = ('ID', '日付', '売上種別','商品/セット名','単価','売上個数','特記事項')
 
     params= {
             'title':'さらぼー管理/売上',
@@ -439,12 +418,19 @@ def create(request, mode):
         price = request.POST['price']               # 値段
         count = request.POST['count']               # 売上個数
 
+        # 特記事項
+        if request.POST['other'] == '0':
+            other = None
+        else:
+            other = 'ダウンロード販売'
+
         # 辞書に格納
         data = {'日付':date,
                 '売上種別':sale_choice,
                 '売上商品ID':name_id,
                 '単価':price,
-                '売上個数':count}
+                '売上個数':count,
+                '特記事項':other}
 
     # 辞書を返す
     return data
@@ -578,11 +564,18 @@ def search(request, mode):
         else:
             nameID = request.POST['name']               # 商品ID
 
+        if request.POST['choiceOther'] == '0':          # 特記事項
+            # 0は検索しない
+            other = ''
+        else:
+            other = 'ダウンロード販売'
+
         # 辞書に格納{検索項目：検索値}
         eachData = {
                 's.date':date,
                 's.type':sale_choice,
                 's.type_id':nameID,
+                's.other':other,
                 }
 
 
@@ -681,7 +674,7 @@ def eachSearch(data):
             continue
         else:
             # 値一致のみ
-            ans.append(key + ' = ' + data[key] + ' ')
+            ans.append(key + ' = "' + data[key] + '" ')
 
     # 戻り値を設定
     return ans

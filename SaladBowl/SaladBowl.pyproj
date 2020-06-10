@@ -32,6 +32,29 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="appManagement\admin.py" />
+    <Compile Include="appManagement\apps.py" />
+    <Compile Include="appManagement\forms.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="appManagement\migrations\__init__.py" />
+    <Compile Include="appManagement\models.py" />
+    <Compile Include="appManagement\tests.py" />
+    <Compile Include="appManagement\urls.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="appManagement\views.py" />
+    <Compile Include="appManagement\__init__.py" />
+    <Compile Include="appMoney\admin.py" />
+    <Compile Include="appMoney\apps.py" />
+    <Compile Include="appMoney\migrations\__init__.py" />
+    <Compile Include="appMoney\models.py" />
+    <Compile Include="appMoney\tests.py" />
+    <Compile Include="appMoney\urls.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="appMoney\views.py" />
+    <Compile Include="appMoney\__init__.py" />
     <Compile Include="appProducts\admin.py" />
     <Compile Include="appProducts\apps.py" />
     <Compile Include="appProducts\forms.py">
@@ -52,6 +75,16 @@
     <Compile Include="SaladBowl\wsgi.py" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="appManagement\" />
+    <Folder Include="appManagement\migrations\" />
+    <Folder Include="appManagement\static\" />
+    <Folder Include="appManagement\static\css\" />
+    <Folder Include="appManagement\templates\" />
+    <Folder Include="appManagement\templates\appManagement\" />
+    <Folder Include="appMoney\" />
+    <Folder Include="appMoney\migrations\" />
+    <Folder Include="appMoney\templates\" />
+    <Folder Include="appMoney\templates\appMoney\" />
     <Folder Include="appProducts\" />
     <Folder Include="appProducts\migrations\" />
     <Folder Include="appProducts\static\" />
@@ -62,14 +95,15 @@
     <Folder Include="SaladBowl\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="appProducts\static\css\index.css" />
+    <Content Include="appManagement\static\css\index.css" />
+    <Content Include="appManagement\templates\appManagement\index.html" />
+    <Content Include="appManagement\templates\appManagement\login.html" />
+    <Content Include="appManagement\templates\appManagement\logout.html" />
+    <Content Include="appMoney\templates\appMoney\index.html" />
     <Content Include="appProducts\static\css\products.css" />
     <Content Include="appProducts\static\js\products.js" />
     <Content Include="appProducts\templates\appProducts\delete.html" />
     <Content Include="appProducts\templates\appProducts\edit.html" />
-    <Content Include="appProducts\templates\appProducts\index.html" />
-    <Content Include="appProducts\templates\appProducts\login.html" />
-    <Content Include="appProducts\templates\appProducts\logout.html" />
     <Content Include="appProducts\templates\appProducts\products.html" />
     <Content Include="requirements.txt" />
     <Content Include="db.sqlite3" />

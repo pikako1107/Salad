@@ -84,6 +84,7 @@
                     <td data-label="商品名/セット名">{{item.name}}</td>
                     <td data-label="値段">{{item.price}}</td>
                     <td data-label="売上個数">{{item.count}}</td>
+                    <td data-label="特記事項">{{item.other}}</td>
                     <td><a href="{% url 'edit' page='sales' id=item.sales_id %}">編集</a></td>
                     <td><a href="{% url 'delete' page='sales' id=item.sales_id %}">削除</a></td>
                 </tr>
