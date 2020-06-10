@@ -7,6 +7,7 @@ class Pos(models.Model):
     blance = models.IntegerField()
     human = models.TextField(max_length=45)
     money = models.DecimalField(max_digits=10, decimal_places=0)
+    note = models.TextField(max_length=200, blank=True, null=True)
     paymentNo = models.IntegerField(blank=True, null=True)
 
 
