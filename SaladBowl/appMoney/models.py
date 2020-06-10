@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 class Pos(models.Model):
-
+    # 残高テーブル
     date = models.DateField()
     blance = models.IntegerField()
     human = models.TextField(max_length=45)
@@ -12,7 +12,7 @@ class Pos(models.Model):
 
 
 class Payment(models.Model):
-
+    # 立替金テーブル
     date = models.DateField()
     place = models.IntegerField()
     human = models.TextField(max_length=45)
@@ -23,18 +23,10 @@ class Payment(models.Model):
 
 
 class Payment_detail(models.Model):
-
+    # 立替金_詳細テーブル
     activity_id = models.IntegerField()
+    place = models.IntegerField()
     content = models.IntegerField()
     hour = models.IntegerField()
     money = models.DecimalField(max_digits=10, decimal_places=0)
 
-
-class Work(models.Model):
-
-    title = models.TextField(max_length=200)
-    writer = models.TextField(max_length=45)
-    editor = models.TextField(max_length=45)
-    illustrator = models.TextField(max_length=45)
-    animator = models.TextField(max_length=45)
-    completion_date = models.DateField()

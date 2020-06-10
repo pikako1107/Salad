@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'appProducts',
     'appMoney',
     'appManagement',
+    'appWorks',
 ]
 
 # Middleware framework
