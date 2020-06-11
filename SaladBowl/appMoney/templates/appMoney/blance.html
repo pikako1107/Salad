@@ -1,0 +1,90 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/blance.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <title>{{title}}</title>
+</head>
+<body>
+    <h1>{{title}}</h1>
+
+    <p>{{msg}}</p>
+
+    <!-- 検索 or 登録 -->
+    <input class="check" type="radio" name="select" value="search" checked>検索
+    <input class="check" type="radio" name="select" value="input">登録
+
+    <!-- 登録フォーム表示 -->
+    <form class="input_form" anction="{% url 'blance' %}" method="post">
+        {% csrf_token %}
+
+        <table>
+            {{ inputForm.as_table }}
+        </table>
+
+        <input class="btn" type="submit" name="input" value="登録">
+    </form>
+
+    <!-- 検索フォーム表示 -->
+    <form class="search_form" anction="{% url 'blance' %}" method="post">
+        {% csrf_token %}
+
+        <table>
+            {{ searchForm.as_table }}
+        </table>
+
+        <input class="btn" type="submit" name="search" value="検索">
+    </form>
+
+    <table class="data-table">
+        <tr class="thead">
+            <th>id</th>
+            <th>日付</th>
+            <th>収支</th>
+            <th>ユーザー</th>
+            <th>金額</th>
+            <th>備考</th>
+        </tr>
+
+        <!--データ表示-->
+        {% for item in data %}
+        <tr>
+            <td class="data-id">{{item.id}}</td>
+            <td data-label="日付">{{item.posDate|date:"Y/m/d"}}</td>
+            <td data-label="収支">{% if item.blance == 0 %}収入
+                                    {% else %}支出{% endif %}</td>
+            <td data-label="ユーザー">{{item.human}}</td>
+            <td data-label="金額">{{item.money}}</td>
+            <td data-label="備考">{{item.note}}</td>
+            <td><a href="{% url 'edit' page='blance' id=item.id %}">編集</a></td>
+            <td><a href="{% url 'delete' page='blance' id=item.id %}">削除</a></td>
+        </tr>
+        {% endfor %}
+
+    </table>
+
+    <div class="pagination">
+        {% if data.has_previous %}
+        <a href="{% url 'blance' %}">&laquo;first</a>
+        <a href="{% url 'blance' %}{{data.previous_page_number}}">&laquo;prev</a>
+        {% endif %}
+
+        <span class="current">
+            [{{data.number}}/{{data.paginator.num_pages}}]
+        </span>
+
+        {% if data.has_next %}
+        <a href="{% url 'blance' %}{{data.next_page_number}}">next&raquo;</a>
+        <a href="{% url 'blance' %}{{data.paginator.num_pages}}">last&raquo;</a>
+        {% endif %}
+    </div>
+
+    <a class="return" href="{% url 'index' %}">戻る</a>
+
+    <script src="{% static 'js/blance.js' %}"></script>
+
+</body>
+</html>

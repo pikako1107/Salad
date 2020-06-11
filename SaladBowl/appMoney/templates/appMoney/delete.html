@@ -1,0 +1,46 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/blance.css' %}">
+    <title>{{title}}</title>
+</head>
+
+<body>
+
+    <h2>{{info}}</h2>
+
+    <table>
+        <!--残高データ表示--> 
+        <tr>
+            <th class="del_header">ID</th><td class="del_item">{{obj.id}}</td>
+        </tr>
+        <tr>
+            <th class="del_header">日付</th><td class="del_item">{{obj.posDate|date:"Y/m/d"}}</td>
+        </tr>
+        <tr>
+            <th class="del_header">収支</th><td class="del_item">{% if obj.blance == 0 %}収入
+                                    {% else %}支出{% endif %}</td>
+        </tr>
+        <tr>
+            <th class="del_header">ユーザー"</th><td class="del_item">{{obj.human}}</td>
+        </tr>
+        <tr>
+            <th class="del_header">金額</th><td class="del_item">{{obj.money}}</td>
+        </tr>
+        <tr>
+            <th class="del_header">備考</th><td class="del_item">{{obj.note}}</td>
+        </tr>
+    </table>
+
+    <form anction="{{ request.META.HTTP_REFERER }}" method="post">
+        {% csrf_token %}
+        <input class="btn" type="submit" value="削除" >
+    </form>
+
+    <a class="return" href="{{request.META.HTTP_REFERER}}">戻る</a>
+
+</body>
+</html>

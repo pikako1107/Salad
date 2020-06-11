@@ -47,6 +47,9 @@
     <Compile Include="appManagement\__init__.py" />
     <Compile Include="appMoney\admin.py" />
     <Compile Include="appMoney\apps.py" />
+    <Compile Include="appMoney\forms.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="appMoney\migrations\__init__.py" />
     <Compile Include="appMoney\models.py" />
     <Compile Include="appMoney\tests.py" />
@@ -90,6 +93,9 @@
     <Folder Include="appManagement\templates\appManagement\" />
     <Folder Include="appMoney\" />
     <Folder Include="appMoney\migrations\" />
+    <Folder Include="appMoney\static\" />
+    <Folder Include="appMoney\static\css\" />
+    <Folder Include="appMoney\static\js\" />
     <Folder Include="appMoney\templates\" />
     <Folder Include="appMoney\templates\appMoney\" />
     <Folder Include="appProducts\" />
@@ -109,8 +115,11 @@
     <Content Include="appManagement\static\css\index.css" />
     <Content Include="appManagement\templates\appManagement\index.html" />
     <Content Include="appManagement\templates\appManagement\login.html" />
-    <Content Include="appManagement\templates\appManagement\logout.html" />
-    <Content Include="appMoney\templates\appMoney\index.html" />
+    <Content Include="appMoney\static\css\blance.css" />
+    <Content Include="appMoney\static\js\blance.js" />
+    <Content Include="appMoney\templates\appMoney\blance.html" />
+    <Content Include="appMoney\templates\appMoney\delete.html" />
+    <Content Include="appMoney\templates\appMoney\edit.html" />
     <Content Include="appProducts\static\css\products.css" />
     <Content Include="appProducts\static\js\products.js" />
     <Content Include="appProducts\templates\appProducts\delete.html" />

@@ -18,5 +18,4 @@ urlpatterns = [
     path('appMoney/', include('appMoney.urls')),
     path('appManagement/', include('appManagement.urls')),
     path('', views.MyLoginView.as_view(), name="login"),
-    path('logout/', views.MyLogoutView.as_view(), name="logout"),
 ]

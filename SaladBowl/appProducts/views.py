@@ -7,6 +7,7 @@ from .models import Products, SetProducts, Sales
 from django.db.models import Max
 from django.shortcuts import redirect
 from . import forms
+import datetime
 
 # Create your views here.
 # グローバル変数
@@ -112,7 +113,7 @@ def sets(request, num=1):
 
         # ボタン判定
         if 'input' in request.POST:
-        # IDの最大値を取得
+            # IDの最大値を取得
             maxID = SetProducts.objects.aggregate(Max('set_id'))
 
             # 登録するIDを取得(最大値+1)
@@ -201,27 +202,29 @@ def sales(request, num=1):
             # 登録関数呼び出し
             dictData = create(request, 2)
 
-            # インスタンス作成
-            insertData = Sales(sales_id = insertID,
-                               date = dictData['日付'],
-                               type = dictData['売上種別'],
-                               type_id = dictData['売上商品ID'],
-                               price = dictData['単価'],
-                               count = dictData['売上個数'],
-                               other = dictData['特記事項'])
+            # falseが戻ってきたら処理を抜ける
+            if dictData != False:
+                # インスタンス作成
+                insertData = Sales(sales_id = insertID,
+                                   date = dictData['日付'],
+                                   type = dictData['売上種別'],
+                                   type_id = dictData['売上商品ID'],
+                                   price = dictData['単価'],
+                                   count = dictData['売上個数'],
+                                   other = dictData['特記事項'])
 
-            # 保存
-            insertData.save()
+                # 保存
+                insertData.save()
 
-            # ダウンロード販売は除く
-            if dictData['特記事項'] != 'ダウンロード販売':
-                # 在庫から売り上げた個数を引く
-                stockCount(int(dictData['売上種別']), 
-                           int(dictData['売上商品ID']), 
-                           int(dictData['売上個数']))
+                # ダウンロード販売は除く
+                if dictData['特記事項'] != 'ダウンロード販売':
+                    # 在庫から売り上げた個数を引く
+                    stockCount(int(dictData['売上種別']), 
+                               int(dictData['売上商品ID']), 
+                               int(dictData['売上個数']))
 
-            global message
-            message = "データを登録しました。"
+                global message
+                message = "データを登録しました。"
 
         else:
             # 検索処理
@@ -412,7 +415,20 @@ def create(request, mode):
 
     else:
         # 売上テーブルデータ取得
-        date = request.POST['date']                 # 日付
+
+        # 日付
+        chkDate = request.POST['date']                 
+        
+        # 日付チェック
+        date = checkDate(chkDate)
+
+        # 日付不正の場合処理を抜ける
+        if date == '':
+            global message
+            message = "日付が不正のため、登録できませんでした。"
+
+            return False
+
         sale_choice = request.POST['sale_choice']   # 売上種別
         name_id = request.POST['name']              # 売上商品のID
         price = request.POST['price']               # 値段
@@ -678,3 +694,23 @@ def eachSearch(data):
 
     # 戻り値を設定
     return ans
+
+
+''' 日付の妥当性チェック
+    引数: strDate　入力値
+    戻り値 正常:フォーマット変換した日付
+           異常:空文字
+'''
+def checkDate(strDate):
+    
+    # 戻り値を初期化
+    ans = ''
+
+    try:
+        # 日付を変換
+        ans = datetime.datetime.strptime(strDate, '%Y-%m-%d')
+        return ans
+
+    except ValueError:
+        return ans
+

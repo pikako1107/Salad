@@ -12,16 +12,18 @@ class MyLoginView(LoginView):
     form_class = forms.LoginForm
     template_name = "appManagement/login.html"
 
-# ログアウトクラス
-class MyLogoutView(LoginRequiredMixin, LogoutView):
-    template_name = "appManagement/logout.html"
-
 # メインページ表示
 @login_required
 def index(request):
 
     # ページURL
-    goto = ('products', 'sets', 'sales')
+    goto = ('products', 
+            'sets', 
+            'sales', 
+            'blance', 
+            'payment_create', 
+            'payment_search', 
+            'works_sum')
 
     params = {
             'title':'さらぼー管理ツール',
