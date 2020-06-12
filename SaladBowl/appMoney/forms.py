@@ -2,6 +2,7 @@ from django import forms
 from . import models
 from .models import Pos, Payment, Payment_detail
 from appManagement.models import User
+from appWorks.models import Works
 
 # グローバル変数
 nameRadioData = [
@@ -21,6 +22,17 @@ listBlance = [
         (1, '支出'),
     ]                       # 収支リスト
 
+listPlace = [
+        (0, '会議室'),
+        (1, 'スタジオ')
+    ]                       # 場所リスト
+
+listContents = [
+        (0, '収録'),
+        (1, '練習'),
+        (2, '配信')
+    ]                       # 活動内容リスト
+
 # 収支登録フォーム
 class posForm(forms.Form): 
     
@@ -33,7 +45,7 @@ class posForm(forms.Form):
                                 widget=forms.RadioSelect())
 
     # ユーザー名
-    human = forms.ModelChoiceField(queryset=User.objects.all(),
+    user = forms.ModelChoiceField(queryset=User.objects.all(),
                                     label="ユーザー", 
                                     to_field_name="id")     
 
@@ -68,6 +80,49 @@ class posForm(forms.Form):
                                     initial=[0, 'なし'],
                                     required=False)     # 立替金No
 
+# 立替金登録フォーム
+class paymentForm(forms.Form):
+    
+    # 日付
+    payDate = forms.DateField(label="日付")           
+    
+    # 場所
+    place = forms.ChoiceField(label="場所", 
+                            choices=listPlace,
+                            initial=[0, '会議室'])    
+
+    # ユーザー
+    user = forms.ModelChoiceField(queryset=User.objects.all(),
+                                    label="ユーザー", 
+                                    to_field_name="id")  
+    # 時間
+    hour = forms.IntegerField(label="時間")                
+
+    # 金額
+    money = forms.IntegerField(label="金額")     
+    
+    # 精算チェック
+    payoff = forms.BooleanField(label="精算チェック", required=False)
+
+
+# 立替金詳細登録フォーム
+class paymentDetailForm(forms.Form):
+
+    # 活動内容選択
+    content = forms.ChoiceField(label="活動内容", 
+                                choices=listContents, 
+                                initial=[0, '収録'],
+                                widget=forms.RadioSelect())
+
+    # 作品選択
+    works = forms.ModelChoiceField(queryset=Works.objects.all(),
+                                    label="作品", 
+                                    to_field_name="id",
+                                    required=False)
+
+    # 時間
+    hour = forms.IntegerField(label="時間")   
+
 
 # 収支検索フォーム
 class searchPosForm(forms.Form):
@@ -86,7 +141,7 @@ class searchPosForm(forms.Form):
                                 widget=forms.RadioSelect())
         
     # ユーザー名
-    human = forms.ModelChoiceField(queryset=User.objects.all(),
+    user = forms.ModelChoiceField(queryset=User.objects.all(),
                                     label="ユーザー", 
                                     to_field_name="id",
                                     required=False)   
@@ -134,4 +189,11 @@ class searchPosForm(forms.Form):
                                     choices=listPayment,
                                     initial=[0, '未選択'],
                                     required=False)     # 立替金No
+
+
+# 残高モデルフォーム
+class posModelForm(forms.ModelForm):
+    class Meta:
+        model = Pos
+        fields = ['posDate', 'blance', 'user', 'money', 'note', 'paymentNo']
 

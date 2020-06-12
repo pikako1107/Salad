@@ -39,6 +39,8 @@
         <input class="btn" type="submit" name="search" value="検索">
     </form>
 
+    <p>残高：{{sumPos}}</p>
+
     <table class="data-table">
         <tr class="thead">
             <th>id</th>
@@ -53,10 +55,10 @@
         {% for item in data %}
         <tr>
             <td class="data-id">{{item.id}}</td>
-            <td data-label="日付">{{item.posDate|date:"Y/m/d"}}</td>
+            <td data-label="日付">{{item.posDate|date:"Y-m-d"}}</td>
             <td data-label="収支">{% if item.blance == 0 %}収入
                                     {% else %}支出{% endif %}</td>
-            <td data-label="ユーザー">{{item.human}}</td>
+            <td data-label="ユーザー">{{item.user}}</td>
             <td data-label="金額">{{item.money}}</td>
             <td data-label="備考">{{item.note}}</td>
             <td><a href="{% url 'edit' page='blance' id=item.id %}">編集</a></td>

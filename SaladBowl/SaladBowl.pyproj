@@ -116,10 +116,13 @@
     <Content Include="appManagement\templates\appManagement\index.html" />
     <Content Include="appManagement\templates\appManagement\login.html" />
     <Content Include="appMoney\static\css\blance.css" />
+    <Content Include="appMoney\static\css\payment.css" />
     <Content Include="appMoney\static\js\blance.js" />
+    <Content Include="appMoney\static\js\payment.js" />
     <Content Include="appMoney\templates\appMoney\blance.html" />
     <Content Include="appMoney\templates\appMoney\delete.html" />
     <Content Include="appMoney\templates\appMoney\edit.html" />
+    <Content Include="appMoney\templates\appMoney\paymentCreate.html" />
     <Content Include="appProducts\static\css\products.css" />
     <Content Include="appProducts\static\js\products.js" />
     <Content Include="appProducts\templates\appProducts\delete.html" />

@@ -1,10 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.core.paginator import Paginator
+from django.db.models import Sum
 from django.contrib.auth.decorators import login_required
 from .models import Pos, Payment, Payment_detail
 from appManagement.models import User
-from .forms import posForm, searchPosForm
+from .forms import posForm, searchPosForm, posModelForm, paymentDetailForm, paymentForm
 import datetime
 
 # Create your views here.
@@ -32,7 +33,7 @@ def blance(request, num=1):
                 insertData = Pos(
                                 posDate = dictData['posDate'],
                                 blance = dictData['blance'],
-                                human = dictData['human'],
+                                user = dictData['user'],
                                 money = dictData['money'],
                                 note = dictData['note'],
                                 paymentNo = dictData['paymentNo']
@@ -49,7 +50,7 @@ def blance(request, num=1):
             whereSQL = search(request, 0)
     
     # データ抽出SQL作成
-    sql = 'SELECT id, posDate, blance, human, money, note '
+    sql = 'SELECT id, posDate, blance, user, money, note '
     sql += 'FROM appMoney_pos '
 
     if whereSQL:
@@ -79,6 +80,9 @@ def blance(request, num=1):
     # ページネーション設定
     page = Paginator(data, 5)
 
+    # 残高算出
+    sumPos = calcPos()
+
     params= {
         'title':'さらぼー管理/収支',
         'type':'収支',
@@ -86,14 +90,109 @@ def blance(request, num=1):
         'inputForm':posForm(),
         'searchForm':searchPosForm(),
         'data':page.get_page(num),
+        'sumPos':sumPos,
     }
 
     return render(request, 'appMoney/blance.html', params)
 
+# 編集ページ表示
+@login_required
+def edit(request, page, id):
+
+    # 変数初期化
+    info_message = 'ID:' + str(id) + 'のデータを編集します'
+    type = ''
+
+    # ページごとにテーブルを変更
+    if page == 'blance':
+        obj = Pos.objects.get(id = id)
+        type = '残高'
+        sent_form = posModelForm(instance=obj)
+
+    else:
+        pass
+
+    # POST送信判定
+    if request.method == 'POST':
+        # ページごとに処理変更
+        if page == 'blance':
+            editData = posModelForm(request.POST, instance=obj)
+            editData.save()
+
+        else:
+            pass
+
+        # メッセージを設定
+        global message
+        message = 'データを更新しました。'
+
+        # リダイレクト
+        return redirect(to='/appMoney/' + page)
+
+    params = {
+            'title':type + '更新',
+            'info':info_message,
+            'form':sent_form,
+        }
+
+    return render(request, 'appMoney/edit.html', params)
+
+
+# 削除ページ表示
+@login_required
+def delete(request, page, id):
+        
+    # 変数初期化
+    info_message = 'ID:' + str(id) + 'のデータを削除します'
+    type = ''
+
+    # ページごとにテーブルを変更
+    if page == 'blance':
+        obj = Pos.objects.get(id = id)
+        type = '残高'
+
+    else:
+        pass
+
+    # POST送信判定
+    if request.method == 'POST':
+        # データを削除
+        obj.delete()
+
+        # メッセージを設定
+        global message
+        message = 'データを削除しました。'
+
+        # リダイレクト
+        return redirect(to='/appMoney/' + page)
+
+    params = {
+            'title':type + '削除',
+            'type':type,
+            'info':info_message,
+            'obj':obj,
+        }
+
+    return render(request, 'appMoney/delete.html', params)
+
 # 立替金登録ページ表示
 @login_required
 def payment_create(request):
-    pass
+    
+    # POST送信判定
+    if (request.method == 'POST'):
+        pass
+
+
+    params= {
+        'title':'さらぼー管理/立替金登録',
+        'type':'立替金登録',
+        'msg':message,
+        'paymentForm':paymentForm(),
+        'detailForm':paymentDetailForm(),
+    }
+
+    return render(request, 'appMoney/paymentCreate.html', params)
 
 # 立替金検索ページ表示
 @login_required
@@ -133,10 +232,10 @@ def create(request, mode):
         blance = request.POST['blance']       # 収支
 
         # ユーザーID
-        userID = request.POST['human'] 
+        userID = request.POST['user'] 
         
         getObj = User.objects.values('name').get(id=userID)
-        human = getObj['name']
+        user = getObj['name']
 
         money = request.POST['money']         # 金額
 
@@ -157,7 +256,7 @@ def create(request, mode):
         # 辞書に格納
         data = {'posDate':posDate, 
                 'blance':blance, 
-                'human':human, 
+                'user':user, 
                 'money':money, 
                 'note':note,
                 'paymentNo':paymentNo}
@@ -341,4 +440,21 @@ def checkDate(strDate):
 
     except ValueError:
         return ans
+
+''' 残高を算出
+    引数:なし
+    戻り値 算出した残高
+'''
+def calcPos():
+    
+    # 収入データを取得
+    income = Pos.objects.filter(blance=0).aggregate(Sum('money'))
+
+    # 支出データを取得
+    expense = Pos.objects.filter(blance=1).aggregate(Sum('money'))
+
+    # 残高を算出(収入 - 支出)
+    sumPos = int(income['money__sum']) - int(expense['money__sum'])
+
+    return sumPos
 

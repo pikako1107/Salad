@@ -18,14 +18,14 @@
             <th class="del_header">ID</th><td class="del_item">{{obj.id}}</td>
         </tr>
         <tr>
-            <th class="del_header">日付</th><td class="del_item">{{obj.posDate|date:"Y/m/d"}}</td>
+            <th class="del_header">日付</th><td class="del_item">{{obj.posDate|date:"Y-m-d"}}</td>
         </tr>
         <tr>
             <th class="del_header">収支</th><td class="del_item">{% if obj.blance == 0 %}収入
                                     {% else %}支出{% endif %}</td>
         </tr>
         <tr>
-            <th class="del_header">ユーザー"</th><td class="del_item">{{obj.human}}</td>
+            <th class="del_header">ユーザー"</th><td class="del_item">{{obj.user}}</td>
         </tr>
         <tr>
             <th class="del_header">金額</th><td class="del_item">{{obj.money}}</td>

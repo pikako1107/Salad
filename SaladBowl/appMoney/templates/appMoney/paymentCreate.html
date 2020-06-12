@@ -1,0 +1,46 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/payment.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <title>{{title}}</title>
+</head>
+<body>
+    <h1>{{title}}</h1>
+
+    <p>{{msg}}</p>
+
+    <!-- 登録フォーム表示 -->
+    <form class="payment_form" anction="{% url 'payment_create' %}" method="post">
+        {% csrf_token %}
+
+        <!--立替金登録-->
+        <table>
+            {{ paymentForm.as_table }}
+        </table>
+
+        <!--詳細登録-->
+        <div id="detail">
+            <table id="form_0">
+                {{ detailForm.as_table }}
+            </table>
+        </div>
+
+        <button type="button" id="plus">+</button>
+        <button type="button" id="minus">-</button>
+
+        <br>
+
+        <input class="btn" type="submit" name="input" value="登録">
+
+    </form>
+
+    <a class="return" href="{% url 'index' %}">戻る</a>
+
+    <script src="{% static 'js/payment.js' %}"></script>
+
+</body>
+</html>
