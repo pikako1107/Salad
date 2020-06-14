@@ -96,7 +96,7 @@ class paymentForm(forms.Form):
                                     label="ユーザー", 
                                     to_field_name="id")  
     # 時間
-    hour = forms.IntegerField(label="時間")                
+    hour = forms.FloatField(label="時間")                
 
     # 金額
     money = forms.IntegerField(label="金額")     
@@ -105,14 +105,64 @@ class paymentForm(forms.Form):
     payoff = forms.BooleanField(label="精算チェック", required=False)
 
 
+# 立替金検索フォーム
+class searchPaymentForm(forms.Form):
+    # 日付
+    payDate = forms.DateField(label="日付", required=False)           
+    
+    # 場所リストに追加
+    listPlace.append((2, '未選択'))
+
+    # 場所
+    place = forms.ChoiceField(label="場所", 
+                            choices=listPlace,
+                            initial=[2, '未選択'],
+                            required=False)    
+
+    # ユーザー
+    user = forms.ModelChoiceField(queryset=User.objects.all(),
+                                    label="ユーザー", 
+                                    to_field_name="id",
+                                    required=False)  
+    # 時間
+    hour = forms.FloatField(label="時間", required=False)     
+    
+    choiceHourInt = forms.ChoiceField(label="時間検索条件",
+                                    choices=intRadioData,
+                                    required=False,
+                                    initial=[0, '一致'],
+                                    widget=forms.RadioSelect())  # 時間検索項目
+
+    # 金額
+    money = forms.IntegerField(label="金額", required=False)  
+   
+    choiceMoneyInt = forms.ChoiceField(label="金額検索条件",
+                                    choices=intRadioData,
+                                    required=False,
+                                    initial=[0, '一致'],
+                                    widget=forms.RadioSelect())  # 金額検索項目    
+    
+    # 検索用精算チェック
+    listPayoff = [
+            (0, '未済'),
+            (1, '精算済み'),
+            (2, '未選択')
+        ]
+
+    # 精算チェック
+    payoff = forms.ChoiceField(label="精算チェック", 
+                               choices=listPayoff,
+                               initial=[2, '未選択'],
+                               required=False)
+
+
 # 立替金詳細登録フォーム
 class paymentDetailForm(forms.Form):
 
     # 活動内容選択
     content = forms.ChoiceField(label="活動内容", 
                                 choices=listContents, 
-                                initial=[0, '収録'],
-                                widget=forms.RadioSelect())
+                                initial=[0, '収録'])
 
     # 作品選択
     works = forms.ModelChoiceField(queryset=Works.objects.all(),
@@ -121,7 +171,7 @@ class paymentDetailForm(forms.Form):
                                     required=False)
 
     # 時間
-    hour = forms.IntegerField(label="時間")   
+    hour = forms.FloatField(label="時間")   
 
 
 # 収支検索フォーム
@@ -196,4 +246,16 @@ class posModelForm(forms.ModelForm):
     class Meta:
         model = Pos
         fields = ['posDate', 'blance', 'user', 'money', 'note', 'paymentNo']
+
+# 立替金モデルフォーム
+class paymentModelForm(forms.ModelForm):
+    class Meta:
+        model = Payment
+        fields = ['payDate', 'place', 'user', 'money', 'hour', 'money_1hour', 'payoff']
+
+# 立替金詳細モデルフォーム
+class detailModelForm(forms.ModelForm):
+    class Meta:
+        model = Payment_detail
+        fields = ['content', 'work_id', 'hour', 'money']
 

@@ -13,26 +13,56 @@
     <h2>{{info}}</h2>
 
     <table>
-        <!--残高データ表示--> 
-        <tr>
-            <th class="del_header">ID</th><td class="del_item">{{obj.id}}</td>
-        </tr>
-        <tr>
-            <th class="del_header">日付</th><td class="del_item">{{obj.posDate|date:"Y-m-d"}}</td>
-        </tr>
-        <tr>
-            <th class="del_header">収支</th><td class="del_item">{% if obj.blance == 0 %}収入
-                                    {% else %}支出{% endif %}</td>
-        </tr>
-        <tr>
-            <th class="del_header">ユーザー"</th><td class="del_item">{{obj.user}}</td>
-        </tr>
-        <tr>
-            <th class="del_header">金額</th><td class="del_item">{{obj.money}}</td>
-        </tr>
-        <tr>
-            <th class="del_header">備考</th><td class="del_item">{{obj.note}}</td>
-        </tr>
+        {% if type == '残高' %}
+            <!--残高データ表示--> 
+            <tr>
+                <th class="del_header">ID</th><td class="del_item">{{obj.id}}</td>
+            </tr>
+            <tr>
+                <th class="del_header">日付</th><td class="del_item">{{obj.posDate|date:"Y-m-d"}}</td>
+            </tr>
+            <tr>
+                <th class="del_header">収支</th><td class="del_item">{% if obj.blance == 0 %}収入
+                                        {% else %}支出{% endif %}</td>
+            </tr>
+            <tr>
+                <th class="del_header">ユーザー"</th><td class="del_item">{{obj.user}}</td>
+            </tr>
+            <tr>
+                <th class="del_header">金額</th><td class="del_item">{{obj.money}}</td>
+            </tr>
+            <tr>
+                <th class="del_header">備考</th><td class="del_item">{{obj.note}}</td>
+            </tr>
+        {% elif type == '立替金' %}
+            <!--立替金データ表示-->
+            <tr>
+                <th class="del_header">ID</th><td class="del_item">{{obj.id}}</td>
+            </tr>
+            <tr>
+                <th class="del_header">日付</th><td class="del_item">{{obj.payDate|date:"Y-m-d"}}</td>
+            </tr>
+            <tr>
+                <th class="del_header">場所</th><td class="del_item">{% if obj.place == 0 %}会議室
+                                        {% else %}スタジオ{% endif %}</td>
+            </tr>
+            <tr>
+                <th class="del_header">ユーザー"</th><td class="del_item">{{obj.user}}</td>
+            </tr>
+            <tr>
+                <th class="del_header">時間</th><td class="del_item">{{obj.hour}}</td>
+            </tr>
+            <tr>
+                <th class="del_header">金額</th><td class="del_item">{{obj.money}}</td>
+            </tr>
+            <tr>
+                <th class="del_header">金額/1h</th><td class="del_item">{{obj.money_1hour}}</td>
+            </tr>
+            <tr>
+                <th class="del_header">精算チェック</th><td class="del_item">{% if item.payoff == 1 %}精算済み
+                                                                                {% endif %}</td>
+            </tr>
+        {% endif %}
     </table>
 
     <form anction="{{ request.META.HTTP_REFERER }}" method="post">

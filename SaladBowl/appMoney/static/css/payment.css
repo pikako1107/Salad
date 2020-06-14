@@ -55,6 +55,12 @@ ul {
     border: 1px solid #232323;
 }
 
+.register {
+    float: none;
+    margin-top: 10px;
+    margin-left: 50px;
+}
+
 @media(max-width: 480px) {
     form {
         text-align: center;
@@ -95,6 +101,12 @@ ul {
     .btn {
         width: 30%;
         margin: 0 auto;
+    }
+
+    .register {
+        float: none;
+        margin-top: 10px;
+        margin-left: 50px;
     }
 
     .pagination {

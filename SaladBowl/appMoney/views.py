@@ -1,17 +1,21 @@
+from django import forms
 from django.shortcuts import render, redirect
+from django.forms import modelformset_factory
 from django.http import HttpResponse
 from django.core.paginator import Paginator
-from django.db.models import Sum
+from django.db.models import Sum, Max
 from django.contrib.auth.decorators import login_required
 from .models import Pos, Payment, Payment_detail
 from appManagement.models import User
-from .forms import posForm, searchPosForm, posModelForm, paymentDetailForm, paymentForm
+from .forms import posForm, searchPosForm, posModelForm, paymentDetailForm, paymentForm, searchPaymentForm, paymentModelForm
 import datetime
+import math
 
 # Create your views here.
 
 # グローバル変数
 message = ''
+money_1hour = 0
 
 # 収支管理ページ表示
 @login_required
@@ -83,6 +87,9 @@ def blance(request, num=1):
     # 残高算出
     sumPos = calcPos()
 
+    # 列名
+    col = ('ID', '日付', '収支', 'ユーザー', '金額', '備考')
+
     params= {
         'title':'さらぼー管理/収支',
         'type':'収支',
@@ -90,7 +97,92 @@ def blance(request, num=1):
         'inputForm':posForm(),
         'searchForm':searchPosForm(),
         'data':page.get_page(num),
+        'col':col,
         'sumPos':sumPos,
+    }
+
+    return render(request, 'appMoney/blance.html', params)
+
+# 立替金登録ページ表示
+@login_required
+def payment(request, num=1):
+
+    # リスト初期化
+    whereSQL = []
+
+    # POST送信判定
+    if (request.method == 'POST'):
+        # ボタン判定
+        if 'input' in request.POST:
+            # 登録関数呼び出し(立替金)
+            dictData = create(request, 1)
+
+            # falseが戻ってきたら処理を抜ける
+            if dictData != False:
+                # インスタンス作成(立替金)
+                insertData = Payment(
+                                    payDate = dictData['payDate'],
+                                    place = dictData['place'],
+                                    user = dictData['user'],
+                                    money = dictData['money'],
+                                    hour = dictData['hour'],
+                                    money_1hour = dictData['money_1hour'],
+                                    payoff = dictData['payoff'],
+                                    )
+
+                # 保存
+                insertData.save()
+
+                global message
+                message = "データを登録しました。"
+
+        else:
+            # 検索処理
+            whereSQL = search(request, 1)
+
+    # データ抽出SQL作成
+    sql = 'SELECT id, payDate, place, user, hour, money, money_1hour, payoff '
+    sql += 'FROM appMoney_payment '
+
+    if whereSQL:
+        # 条件を追加
+        sql += ' WHERE '
+
+        # ループをカウント
+        i = 0
+
+        for SQL in whereSQL:
+            if i == 0:
+                # ループ一回目
+                sql += SQL
+            else:
+                # ループ二回目以降
+                sql += 'AND ' + SQL
+
+            # カウントアップ
+            i += 1
+
+    # 末尾にセミコロン追加
+    sql += ';'
+
+    # 立替金テーブルデータ取得
+    data = Payment.objects.raw(sql)
+    
+    # ページネーション設定
+    page = Paginator(data, 5)
+
+    # 列名
+    col = ('日付', '場所', 'ユーザー', '時間', '金額', '金額/1h', '精算チェック')  
+
+    params= {
+        'title':'さらぼー管理/立替金登録',
+        'type':'立替金',
+        'msg':message,
+        'inputForm':paymentForm(),
+        'searchForm':searchPaymentForm(),
+        'data':page.get_page(num),
+        'col':col,
+        'sumPos':'',
     }
 
     return render(request, 'appMoney/blance.html', params)
@@ -109,6 +201,11 @@ def edit(request, page, id):
         type = '残高'
         sent_form = posModelForm(instance=obj)
 
+    elif page == 'payment':
+        obj = Payment.objects.get(id = id)
+        type = '立替金'
+        sent_form = paymentModelForm(instance=obj)
+
     else:
         pass
 
@@ -117,6 +214,10 @@ def edit(request, page, id):
         # ページごとに処理変更
         if page == 'blance':
             editData = posModelForm(request.POST, instance=obj)
+            editData.save()
+
+        elif page == 'payment':
+            editData = paymentModelForm(request.POST, instance=obj)
             editData.save()
 
         else:
@@ -151,6 +252,10 @@ def delete(request, page, id):
         obj = Pos.objects.get(id = id)
         type = '残高'
 
+    elif page == 'payment':
+        obj = Payment.objects.get(id = id)
+        type = '立替金'
+
     else:
         pass
 
@@ -175,28 +280,9 @@ def delete(request, page, id):
 
     return render(request, 'appMoney/delete.html', params)
 
-# 立替金登録ページ表示
-@login_required
-def payment_create(request):
-    
-    # POST送信判定
-    if (request.method == 'POST'):
-        pass
-
-
-    params= {
-        'title':'さらぼー管理/立替金登録',
-        'type':'立替金登録',
-        'msg':message,
-        'paymentForm':paymentForm(),
-        'detailForm':paymentDetailForm(),
-    }
-
-    return render(request, 'appMoney/paymentCreate.html', params)
-
 # 立替金検索ページ表示
 @login_required
-def payment_search(request):
+def payment_detail(request):
     pass
 
 # 作品ごと集計ページ表示
@@ -211,9 +297,14 @@ def works_sum(request):
     引数: request
           mode  0:残高テーブル更新
                 1:立替金テーブル更新
+                2:立替金詳細テーブル更新
+          cnt   詳細のデータ数
     戻り値 登録データ(辞書)
 '''
-def create(request, mode):
+def create(request, mode, cnt=0):
+
+    global message
+    global money_1hour
 
     if mode == 0:
         # 残高テーブル登録データ
@@ -224,7 +315,6 @@ def create(request, mode):
 
         # 日付不正の場合処理を抜ける
         if posDate == '':
-            global message
             message = "日付が不正のため、登録できませんでした。"
 
             return False
@@ -234,6 +324,7 @@ def create(request, mode):
         # ユーザーID
         userID = request.POST['user'] 
         
+        # ユーザー
         getObj = User.objects.values('name').get(id=userID)
         user = getObj['name']
 
@@ -261,8 +352,48 @@ def create(request, mode):
                 'note':note,
                 'paymentNo':paymentNo}
 
-    else:
+    elif mode == 1:
         # 立替金テーブル登録データ
+        chkDate = request.POST['payDate']   # 日付
+
+        # 日付チェック
+        payDate = checkDate(chkDate)
+
+        # 日付不正の場合処理を抜ける
+        if payDate == '':
+            message = "日付が不正のため、登録できませんでした。"
+
+            return False
+
+        place = request.POST['place']   # 場所
+        
+        # ユーザー
+        user = getUser(request)
+
+        hour = request.POST['hour']         # 時間
+        money = request.POST['money']       # 金額
+
+        # 精算チェック
+        if ('payoff' in request.POST):
+            # チェックありはTrue
+            payoff = True
+        else:
+            # チェックなしはFalse
+            payoff = False
+
+        money_1hour = float(money) / float(hour)    # 1時間あたりの金額
+
+        # 辞書に格納
+        data = {'payDate':payDate, 
+                'place':place, 
+                'user':user, 
+                'hour':hour,
+                'money':money, 
+                'money_1hour':round(money_1hour),
+                'payoff':payoff}
+
+    else:
+        # 立替金詳細データ
         pass
 
     # 辞書を返す
@@ -316,11 +447,58 @@ def search(request, mode):
         else:
             paymentNo = request.POST['paymentNo']
 
+        # ユーザー検索
+        user = getUser(request)
+
         # 辞書に格納{検索項目：検索値}
         eachData = {
                 'posDate':posDate,
                 'blance':blance,
                 'paymentNo':paymentNo,
+                'user':user,
+                }
+
+    elif mode == 1:
+        # 立替金テーブル検索
+        # 文字列はないのでダミー
+        strData = {}
+        
+        # 数値検索対象
+        hourWhere = request.POST['choiceHourInt']      # 時間検索条件
+        moneyWhere = request.POST['choiceMoneyInt']    # 金額検索条件
+
+        # 辞書に格納{検索項目：検索条件(0:一致、1:以上、2:以下)}
+        intData = {
+                    'hour':hourWhere,
+                    'money':moneyWhere,
+            }
+
+        # その他検索対象
+        payDate = request.POST['payDate']   # 日付
+
+        # 収支検索
+        if request.POST['place'] == '2':
+            # 2は検索しない
+            place = ''
+        else:
+            place = request.POST['place']
+
+        # 精算チェック検索
+        if request.POST['payoff'] == '2':
+            # 0は検索しない
+            payoff = ''
+        else:
+            payoff = request.POST['payoff']
+
+        # ユーザー検索
+        user = getUser(request)
+
+        # 辞書に格納{検索項目：検索値}
+        eachData = {
+                'payDate':payDate,
+                'place':place,
+                'payoff':payoff,
+                'user':user,
                 }
 
     # 文字列検索SQL作成
@@ -442,7 +620,7 @@ def checkDate(strDate):
         return ans
 
 ''' 残高を算出
-    引数:なし
+    引数: なし
     戻り値 算出した残高
 '''
 def calcPos():
@@ -458,3 +636,21 @@ def calcPos():
 
     return sumPos
 
+''' ユーザー名を取得
+    引数: request
+    戻り値 ユーザー名格納オブジェクト
+           未選択の場合、空文字を返す
+'''
+def getUser(request):
+    
+    if request.POST['user'] == '':
+        # 空の場合処理を終了
+        return ''
+
+    # ユーザーID
+    userID = request.POST['user'] 
+        
+    # ユーザー
+    getObj = User.objects.values('name').get(id=userID)
+
+    return getObj['name']

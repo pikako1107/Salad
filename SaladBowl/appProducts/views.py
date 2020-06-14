@@ -415,7 +415,6 @@ def create(request, mode):
 
     else:
         # 売上テーブルデータ取得
-
         # 日付
         chkDate = request.POST['date']                 
         

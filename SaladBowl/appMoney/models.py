@@ -17,7 +17,7 @@ class Payment(models.Model):
     place = models.IntegerField()
     user = models.CharField(max_length=45, default='')
     money = models.DecimalField(max_digits=10, decimal_places=0)
-    hour = models.IntegerField()
+    hour = models.FloatField()
     money_1hour = models.IntegerField()
     payoff = models.BooleanField()
 
@@ -27,6 +27,6 @@ class Payment_detail(models.Model):
     activity_id = models.IntegerField()
     content = models.IntegerField()
     work_id = models.IntegerField()
-    hour = models.IntegerField()
+    hour = models.FloatField()
     money = models.DecimalField(max_digits=10, decimal_places=0)
 

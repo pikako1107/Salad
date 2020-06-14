@@ -21,8 +21,8 @@ def index(request):
             'sets', 
             'sales', 
             'blance', 
-            'payment_create', 
-            'payment_search', 
+            'payment', 
+            'payment_detail', 
             'works_sum')
 
     params = {
