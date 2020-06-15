@@ -62,6 +62,23 @@
                 <th class="del_header">精算チェック</th><td class="del_item">{% if item.payoff == 1 %}精算済み
                                                                                 {% endif %}</td>
             </tr>
+        {% else %}
+            <!--立替金詳細データ表示-->
+            <tr>
+                <th class="del_header">ID</th><td class="del_item">{{obj.id}}</td>
+            </tr>
+            <tr>
+                <th class="del_header">活動内容</th><td class="del_item">{{obj.content}}</td>
+            </tr>
+            <tr>
+                <th class="del_header">作品</th><td class="del_item">{{obj.work_id}}</td>
+            </tr>
+            <tr>
+                <th class="del_header">時間</th><td class="del_item">{{obj.hour}}</td>
+            </tr>
+            <tr>
+                <th class="del_header">金額</th><td class="del_item">{{obj.money}}</td>
+            </tr>
         {% endif %}
     </table>
 

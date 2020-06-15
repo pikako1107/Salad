@@ -129,8 +129,8 @@ class searchPaymentForm(forms.Form):
     
     choiceHourInt = forms.ChoiceField(label="時間検索条件",
                                     choices=intRadioData,
-                                    required=False,
                                     initial=[0, '一致'],
+                                    required=False,
                                     widget=forms.RadioSelect())  # 時間検索項目
 
     # 金額
@@ -138,8 +138,8 @@ class searchPaymentForm(forms.Form):
    
     choiceMoneyInt = forms.ChoiceField(label="金額検索条件",
                                     choices=intRadioData,
-                                    required=False,
                                     initial=[0, '一致'],
+                                    required=False,
                                     widget=forms.RadioSelect())  # 金額検索項目    
     
     # 検索用精算チェック
@@ -152,12 +152,17 @@ class searchPaymentForm(forms.Form):
     # 精算チェック
     payoff = forms.ChoiceField(label="精算チェック", 
                                choices=listPayoff,
-                               initial=[2, '未選択'],
-                               required=False)
+                               required=False,
+                               initial=[2, '未選択'])
 
 
 # 立替金詳細登録フォーム
 class paymentDetailForm(forms.Form):
+
+    # 立替金ID
+    activity_id = forms.ModelChoiceField(queryset=Payment.objects.all(),
+                                    label="立替金ID", 
+                                    to_field_name="id")  
 
     # 活動内容選択
     content = forms.ChoiceField(label="活動内容", 
@@ -174,6 +179,49 @@ class paymentDetailForm(forms.Form):
     hour = forms.FloatField(label="時間")   
 
 
+# 立替金詳細検索フォーム
+class searchPaymentDetailForm(forms.Form):
+
+    # 立替金ID
+    activity_id = forms.ModelChoiceField(queryset=Payment.objects.all(),
+                                    label="立替金ID", 
+                                    to_field_name="id",
+                                    required=False)  
+
+    # 活動内容リストに追加
+    listContents.append((3, '未選択'))
+
+    # 活動内容選択
+    content = forms.ChoiceField(label="活動内容", 
+                                choices=listContents, 
+                                initial=[3, '未選択'],
+                                required=False)
+
+    # 作品選択
+    works = forms.ModelChoiceField(queryset=Works.objects.all(),
+                                    label="作品", 
+                                    to_field_name="id",
+                                    required=False)
+
+    # 時間
+    hour = forms.FloatField(label="時間", required=False)   
+
+    choiceHourInt = forms.ChoiceField(label="時間検索条件",
+                                    choices=intRadioData,
+                                    initial=[0, '一致'],
+                                    required=False,
+                                    widget=forms.RadioSelect())  # 時間検索項目
+
+    # 金額
+    money = forms.IntegerField(label="金額", required=False)  
+   
+    choiceMoneyInt = forms.ChoiceField(label="金額検索条件",
+                                    choices=intRadioData,
+                                    initial=[0, '一致'],
+                                    required=False,
+                                    widget=forms.RadioSelect())  # 金額検索項目    
+
+
 # 収支検索フォーム
 class searchPosForm(forms.Form):
 
@@ -187,7 +235,6 @@ class searchPosForm(forms.Form):
     blance = forms.ChoiceField(label="収支", 
                                 choices=listBlance, 
                                 initial=[2, '両方'],
-                                required=False,
                                 widget=forms.RadioSelect())
         
     # ユーザー名
@@ -200,7 +247,6 @@ class searchPosForm(forms.Form):
 
     choiceMoneyInt = forms.ChoiceField(label="金額検索条件",
                                     choices=intRadioData,
-                                    required=False,
                                     initial=[0, '一致'],
                                     widget=forms.RadioSelect())  # 金額検索項目
 
@@ -210,7 +256,6 @@ class searchPosForm(forms.Form):
 
     choiceNoteStr = forms.ChoiceField(label="備考検索条件",
                                     choices=nameRadioData,
-                                    required=False,
                                     initial=[0, '完全一致'],
                                     widget=forms.RadioSelect())  # 備考検索項目
 
@@ -237,8 +282,7 @@ class searchPosForm(forms.Form):
     # 立替金
     paymentNo = forms.ChoiceField(label="立替金", 
                                     choices=listPayment,
-                                    initial=[0, '未選択'],
-                                    required=False)     # 立替金No
+                                    initial=[0, '未選択'])     # 立替金No
 
 
 # 残高モデルフォーム

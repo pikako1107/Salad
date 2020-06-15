@@ -14,8 +14,13 @@
     <p>{{msg}}</p>
 
     <!-- 検索 or 登録 -->
-    <input class="check" type="radio" name="select" value="search" checked>検索
-    <input class="check" type="radio" name="select" value="input">登録
+    {% if chk == True %}
+        <input class="check" type="radio" name="select" value="search" checked>検索
+        <input class="check" type="radio" name="select" value="input">登録
+    {% else %}
+        <input class="check" type="radio" name="select" value="search">検索
+        <input class="check" type="radio" name="select" value="input" checked>登録
+    {% endif %}
 
     <!-- 登録フォーム表示 -->
     <form class="input_form" anction="{% url 'products' %}" method="post">

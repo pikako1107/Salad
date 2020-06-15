@@ -1,5 +1,17 @@
 $(function () {
+
+    // 読み込み時の処理
+    window.onload = function () {
+        changeForm();
+    }
+
+    // ラジオボタン変更処理
     $('input[name=select]').change(function () {
+        changeForm();
+    });
+
+    // フォーム入れ替え
+    function changeForm() {
         // 選択されたラジオボタンを格納
         var result = $('input[name=select]:checked').val();
 
@@ -15,5 +27,5 @@ $(function () {
             // 登録フォームを表示
             $('.input_form').show();
         }
-    });
+    }
 });

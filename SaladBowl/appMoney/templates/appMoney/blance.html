@@ -14,8 +14,13 @@
     <p>{{msg}}</p>
 
     <!-- 検索 or 登録 -->
-    <input class="check" type="radio" name="select" value="search" checked>検索
-    <input class="check" type="radio" name="select" value="input">登録
+    {% if chk == True %}
+        <input class="check" type="radio" name="select" value="search" checked>検索
+        <input class="check" type="radio" name="select" value="input">登録
+    {% else %}
+        <input class="check" type="radio" name="select" value="search">検索
+        <input class="check" type="radio" name="select" value="input" checked>登録
+    {% endif %}
 
     <!-- 登録フォーム表示 -->
     <form class="input_form" anction="{% url 'blance' %}" method="post">
@@ -85,6 +90,21 @@
             </tr>
             {% endfor %}
 
+        {% else %}
+            <!--詳細データ-->
+            {% for item in data %}
+            <tr>
+                <td data-label="日付">{{item.payDate|date:"Y-m-d"}}</td>
+                <td data-label="場所">{{item.place}}</td>
+                <td data-label="活動内容">{{item.content}}</td>
+                <td data-label="作品">{{item.title}}</td>
+                <td data-label="時間">{{item.hour}}</td>
+                <td data-label="金額">{{item.money}}</td>
+                <td><a href="{% url 'edit' page='payment_detail' id=item.id %}">編集</a></td>
+                <td><a href="{% url 'delete' page='payment_detail' id=item.id %}">削除</a></td>
+            </tr>
+            {% endfor %}
+
         {% endif %}
 
     </table>
@@ -92,8 +112,8 @@
     <div class="pagination">
         {% if type == '収支' %}
             {% if data.has_previous %}
-            <a href="{% url 'blance' %}">&laquo;first</a>
-            <a href="{% url 'blance' %}{{data.previous_page_number}}">&laquo;prev</a>
+                <a href="{% url 'blance' %}">&laquo;first</a>
+                <a href="{% url 'blance' %}{{data.previous_page_number}}">&laquo;prev</a>
             {% endif %}
 
             <span class="current">
@@ -101,14 +121,14 @@
             </span>
 
             {% if data.has_next %}
-            <a href="{% url 'blance' %}{{data.next_page_number}}">next&raquo;</a>
-            <a href="{% url 'blance' %}{{data.paginator.num_pages}}">last&raquo;</a>
+                <a href="{% url 'blance' %}{{data.next_page_number}}">next&raquo;</a>
+                <a href="{% url 'blance' %}{{data.paginator.num_pages}}">last&raquo;</a>
             {% endif %}
 
         {% elif type == '立替金' %}
             {% if data.has_previous %}
-            <a href="{% url 'payment' %}">&laquo;first</a>
-            <a href="{% url 'payment' %}{{data.previous_page_number}}">&laquo;prev</a>
+                <a href="{% url 'payment' %}">&laquo;first</a>
+                <a href="{% url 'payment' %}{{data.previous_page_number}}">&laquo;prev</a>
             {% endif %}
 
             <span class="current">
@@ -116,8 +136,23 @@
             </span>
 
             {% if data.has_next %}
-            <a href="{% url 'payment' %}{{data.next_page_number}}">next&raquo;</a>
-            <a href="{% url 'payment' %}{{data.paginator.num_pages}}">last&raquo;</a>
+                <a href="{% url 'payment' %}{{data.next_page_number}}">next&raquo;</a>
+                <a href="{% url 'payment' %}{{data.paginator.num_pages}}">last&raquo;</a>
+            {% endif %}
+
+        {% else %}
+            {% if data.has_previous %}
+                <a href="{% url 'payment_detail' %}">&laquo;first</a>
+                <a href="{% url 'payment_detail' %}{{data.previous_page_number}}">&laquo;prev</a>
+            {% endif %}
+
+            <span class="current">
+                [{{data.number}}/{{data.paginator.num_pages}}]
+            </span>
+
+            {% if data.has_next %}
+                <a href="{% url 'payment_detail' %}{{data.next_page_number}}">next&raquo;</a>
+                <a href="{% url 'payment_detail' %}{{data.paginator.num_pages}}">last&raquo;</a>
             {% endif %}
         {% endif %}
     </div>

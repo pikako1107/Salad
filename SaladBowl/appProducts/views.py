@@ -13,9 +13,14 @@ import datetime
 # グローバル変数
 message = ''
 
+# (True:検索、False:登録)
+chk = True
+
 # 在庫ページ表示
 @login_required
 def products(request, num=1):
+
+    global chk
 
     # リスト初期化
     whereSQL = []
@@ -97,13 +102,28 @@ def products(request, num=1):
             'searchForm':productsSearchForm(),
             'col':col,
             'data':page.get_page(num),
+            'chk':chk,
         }
+
+    if 'input' in request.POST:
+        params['inputForm'] = productsForm(request.POST)
+        
+        # 登録ラジオボタンにチェック
+        params['chk'] = False
+
+    elif 'search' in request.POST:
+        params['searchForm'] = productsSearchForm(request.POST)
+
+        # 検索ラジオボタンにチェック
+        params['chk'] = True
 
     return render(request, 'appProducts/products.html', params)
 
 # セットページ表示
 @login_required
 def sets(request, num=1):
+
+    global chk
 
     # リスト初期化
     whereSQL = []
@@ -178,12 +198,28 @@ def sets(request, num=1):
             'searchForm':setsSearchForm(),
             'col':col,
             'data':page.get_page(num),
+            'chk':chk,
         }
+
+    if 'input' in request.POST:
+        params['inputForm'] = setsForm(request.POST)
+        
+        # 登録ラジオボタンにチェック
+        params['chk'] = False
+
+    elif 'search' in request.POST:
+        params['searchForm'] = setsSearchForm(request.POST)
+
+        # 検索ラジオボタンにチェック
+        params['chk'] = True
+
     return render(request, 'appProducts/products.html', params)
 
 # 売上ページ表示
 @login_required
 def sales(request, num=1):
+
+    global chk
 
     # リスト初期化
     whereSQL = []
@@ -271,7 +307,21 @@ def sales(request, num=1):
             'searchForm':salesSearchForm(),
             'col':col,
             'data':page.get_page(num),
+            'chk':chk,
         }
+
+    if 'input' in request.POST:
+        params['inputForm'] = salesForm(request.POST)
+        
+        # 登録ラジオボタンにチェック
+        params['chk'] = False
+
+    elif 'search' in request.POST:
+        params['searchForm'] = salesSearchForm(request.POST)
+
+        # 検索ラジオボタンにチェック
+        params['chk'] = True
+
     return render(request, 'appProducts/products.html', params)
 
 # 編集ページ表示

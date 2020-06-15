@@ -1,13 +1,13 @@
 from django import forms
 from django.shortcuts import render, redirect
-from django.forms import modelformset_factory
 from django.http import HttpResponse
 from django.core.paginator import Paginator
 from django.db.models import Sum, Max
 from django.contrib.auth.decorators import login_required
 from .models import Pos, Payment, Payment_detail
 from appManagement.models import User
-from .forms import posForm, searchPosForm, posModelForm, paymentDetailForm, paymentForm, searchPaymentForm, paymentModelForm
+from appWorks.models import Works
+from .forms import posForm, searchPosForm, posModelForm, paymentDetailForm, paymentForm, searchPaymentForm, paymentModelForm, searchPaymentDetailForm, detailModelForm
 import datetime
 import math
 
@@ -17,9 +17,14 @@ import math
 message = ''
 money_1hour = 0
 
+# (True:検索、False:登録)
+chk = True
+
 # 収支管理ページ表示
 @login_required
 def blance(request, num=1):
+
+    global chk
 
     # リスト初期化
     whereSQL = []
@@ -99,13 +104,28 @@ def blance(request, num=1):
         'data':page.get_page(num),
         'col':col,
         'sumPos':sumPos,
+        'chk':chk,
     }
+
+    if 'input' in request.POST:
+        params['inputForm'] = posForm(request.POST)
+        
+        # 登録ラジオボタンにチェック
+        params['chk'] = False
+
+    elif 'search' in request.POST:
+        params['searchForm'] = searchPosForm(request.POST)
+
+        # 検索ラジオボタンにチェック
+        params['chk'] = True
 
     return render(request, 'appMoney/blance.html', params)
 
 # 立替金登録ページ表示
 @login_required
 def payment(request, num=1):
+
+    global chk
 
     # リスト初期化
     whereSQL = []
@@ -139,6 +159,7 @@ def payment(request, num=1):
         else:
             # 検索処理
             whereSQL = search(request, 1)
+            
 
     # データ抽出SQL作成
     sql = 'SELECT id, payDate, place, user, hour, money, money_1hour, payoff '
@@ -175,7 +196,7 @@ def payment(request, num=1):
     col = ('日付', '場所', 'ユーザー', '時間', '金額', '金額/1h', '精算チェック')  
 
     params= {
-        'title':'さらぼー管理/立替金登録',
+        'title':'さらぼー管理/立替金',
         'type':'立替金',
         'msg':message,
         'inputForm':paymentForm(),
@@ -183,9 +204,136 @@ def payment(request, num=1):
         'data':page.get_page(num),
         'col':col,
         'sumPos':'',
+        'chk':chk,
     }
 
+    if 'input' in request.POST:
+        params['inputForm'] = paymentForm(request.POST)
+
+        # 登録ラジオボタンにチェック
+        params['chk'] = False
+
+    elif 'search' in request.POST:
+        params['searchForm'] = searchPaymentForm(request.POST)
+
+        # 検索ラジオボタンにチェック
+        params['chk'] = True
+
     return render(request, 'appMoney/blance.html', params)
+
+# 詳細登録ページ表示
+@login_required
+def payment_detail(request, num=1):
+
+    global chk
+
+    # リスト初期化
+    whereSQL = []
+
+    # POST送信判定
+    if (request.method == 'POST'):
+        # ボタン判定
+        if 'input' in request.POST:
+            # 登録関数呼び出し(立替金詳細)
+            dictData = create(request, 2)
+
+            # インスタンス作成(立替金詳細)
+            insertData = Payment_detail(
+                                        activity_id = dictData['activity_id'],
+                                        content = dictData['content'],
+                                        work_id = dictData['work_id'],
+                                        hour = dictData['hour'],
+                                        money = dictData['money'],
+                                        )
+
+            # 保存
+            insertData.save()
+
+            global message
+            message = "データを登録しました。"
+
+        else:
+            # 検索処理
+            whereSQL = search(request, 2)
+
+    # データ抽出SQL作成
+    sql =  "SELECT p.payDate, "
+    sql += "pd.id, "
+    sql += "CASE p.place "
+    sql += "	WHEN 0 THEN '会議室'"
+    sql += "	WHEN 1 THEN 'スタジオ'"
+    sql += "END AS place, "
+    sql += "CASE pd. content "
+    sql += "	WHEN 0 THEN '収録'"
+    sql += "	WHEN 1 THEN '練習'"
+    sql += "	WHEN 2 THEN '配信'"
+    sql += "END AS content, "
+    sql += "w.title, "
+    sql += "pd.hour, "
+    sql += "pd.money "
+    sql += "FROM appMoney_payment_detail AS pd "
+    sql += "INNER JOIN appMoney_payment AS p "
+    sql += "ON pd.activity_id = p.id "
+    sql += "LEFT OUTER JOIN appWorks_works AS w "
+    sql += "ON pd.work_id = w.id "
+
+    if whereSQL:
+        # 条件を追加
+        sql += ' WHERE '
+
+        # ループをカウント
+        i = 0
+
+        for SQL in whereSQL:
+            if i == 0:
+                # ループ一回目
+                sql += SQL
+            else:
+                # ループ二回目以降
+                sql += 'AND ' + SQL
+
+            # カウントアップ
+            i += 1
+
+    # 末尾にセミコロン追加
+    sql += ';'
+
+    # 立替金テーブルデータ取得
+    data = Payment_detail.objects.raw(sql)
+    
+    # ページネーション設定
+    page = Paginator(data, 5)
+
+    # 列名
+    col = ('日付', '場所', '活動内容', '作品', '時間', '金額')  
+
+    params= {
+        'title':'さらぼー管理/立替金詳細',
+        'type':'立替金詳細',
+        'msg':message,
+        'inputForm':paymentDetailForm(),
+        'searchForm':searchPaymentDetailForm(),
+        'data':page.get_page(num),
+        'col':col,
+        'sumPos':'',
+        'chk':chk,
+    }
+
+    if 'input' in request.POST:
+        params['inputForm'] = paymentDetailForm(request.POST)
+
+        # 登録ラジオボタンにチェック
+        params['chk'] = False
+
+    elif 'search' in request.POST:
+        params['searchForm'] = searchPaymentDetailForm(request.POST)
+
+        # 検索ラジオボタンにチェック
+        params['chk'] = True
+
+    return render(request, 'appMoney/blance.html', params)
+
+
 
 # 編集ページ表示
 @login_required
@@ -207,7 +355,9 @@ def edit(request, page, id):
         sent_form = paymentModelForm(instance=obj)
 
     else:
-        pass
+        obj = Payment_detail.objects.get(id = id)
+        type = '立替金詳細'
+        sent_form = detailModelForm(instance=obj)
 
     # POST送信判定
     if request.method == 'POST':
@@ -221,7 +371,8 @@ def edit(request, page, id):
             editData.save()
 
         else:
-            pass
+            editData = detailModelForm(request.POST, instance=obj)
+            editData.save()
 
         # メッセージを設定
         global message
@@ -257,7 +408,8 @@ def delete(request, page, id):
         type = '立替金'
 
     else:
-        pass
+        obj = Payment_detail.objects.get(id = id)
+        type = '立替金詳細'
 
     # POST送信判定
     if request.method == 'POST':
@@ -280,10 +432,6 @@ def delete(request, page, id):
 
     return render(request, 'appMoney/delete.html', params)
 
-# 立替金検索ページ表示
-@login_required
-def payment_detail(request):
-    pass
 
 # 作品ごと集計ページ表示
 @login_required
@@ -298,7 +446,6 @@ def works_sum(request):
           mode  0:残高テーブル更新
                 1:立替金テーブル更新
                 2:立替金詳細テーブル更新
-          cnt   詳細のデータ数
     戻り値 登録データ(辞書)
 '''
 def create(request, mode, cnt=0):
@@ -321,12 +468,8 @@ def create(request, mode, cnt=0):
 
         blance = request.POST['blance']       # 収支
 
-        # ユーザーID
-        userID = request.POST['user'] 
-        
         # ユーザー
-        getObj = User.objects.values('name').get(id=userID)
-        user = getObj['name']
+        user = getUser(request)
 
         money = request.POST['money']         # 金額
 
@@ -394,7 +537,28 @@ def create(request, mode, cnt=0):
 
     else:
         # 立替金詳細データ
-        pass
+        activity_id = request.POST['activity_id']   # 立替金ID
+        content = request.POST['content']           # 活動内容
+        
+        # 作品ID
+        if request.POST['works'] == '':
+            # 未選択はNULL
+            work_id = None
+        else:
+            work_id = request.POST['works'] 
+            
+        hour = request.POST['hour']                 # 時間
+
+        # 金額算出
+        money = calcMoney(activity_id, hour)
+
+        # 辞書に格納
+        data = {'activity_id':activity_id, 
+                'content':content, 
+                'work_id':work_id, 
+                'hour':hour,
+                'money':money, 
+                }
 
     # 辞書を返す
     return data
@@ -403,6 +567,7 @@ def create(request, mode, cnt=0):
     引数: request
           mode  0:残高テーブル検索
                 1:立替金テーブル検索
+                2:立替金詳細テーブル検索
     戻り値 WHERE句SQL(リスト)
 '''
 def search(request, mode): 
@@ -500,6 +665,44 @@ def search(request, mode):
                 'payoff':payoff,
                 'user':user,
                 }
+
+    else:
+        # 詳細テーブル検索
+        table = "pd."
+        
+        # 文字列はないのでダミー
+        strData = {}
+
+        # 数値検索対象
+        hourWhere = request.POST['choiceHourInt']      # 時間検索条件
+        moneyWhere = request.POST['choiceMoneyInt']    # 金額検索条件
+
+        # 辞書に格納{検索項目：検索条件(0:一致、1:以上、2:以下)}
+        intData = {
+                    'hour':hourWhere,
+                    'money':moneyWhere,
+            }
+
+        # その他検索対象
+        activity_id = request.POST['activity_id']   # 立替金ID
+        
+        # 活動内容
+        if request.POST['content'] == '3':
+            # 3は検索しない
+            content = ''
+        else:
+            content = request.POST['content']
+
+        # 作品
+        title = getWork(request)
+
+        # 辞書に格納{検索項目：検索値}
+        eachData = {
+                'pd.activity_id':activity_id,
+                'pd.content':content,
+                'w.title':title,
+                }
+
 
     # 文字列検索SQL作成
     strSQL = strSearch(request, strData, table)
@@ -638,7 +841,7 @@ def calcPos():
 
 ''' ユーザー名を取得
     引数: request
-    戻り値 ユーザー名格納オブジェクト
+    戻り値 ユーザー名
            未選択の場合、空文字を返す
 '''
 def getUser(request):
@@ -654,3 +857,39 @@ def getUser(request):
     getObj = User.objects.values('name').get(id=userID)
 
     return getObj['name']
+
+''' 作品を取得
+    引数: request
+    戻り値 作品名
+           未選択の場合、空文字を返す
+'''
+def getWork(request):
+
+    if request.POST['works'] == '':
+        # 空の場合処理を終了
+        return ''
+
+    # 作品ID
+    workID = request.POST['works'] 
+        
+    # 作品名
+    getObj = Works.objects.values('title').get(id=workID)
+
+    return getObj['title']
+
+''' 活動内容ごとの金額を算出
+    引数: id      立替金ID
+          hour    時間
+    戻り値 算出した金額
+'''
+def calcMoney(id, hour):
+    # 1時間あたりの金額取得(オブジェクト)
+    getObj = Payment.objects.values('money_1hour').get(id=id)
+
+    # オブジェクトから金額取得
+    money = getObj['money_1hour']
+
+    # 金額を計算
+    ans = float(money) * float(hour)
+
+    return ans
