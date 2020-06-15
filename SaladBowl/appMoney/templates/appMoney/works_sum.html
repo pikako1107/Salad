@@ -1,0 +1,61 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/blance.css' %}">
+    <title>{{title}}</title>
+</head>
+<body>
+    <h1>{{title}}</h1>
+
+    <p>{{msg}}</p>
+
+    <!--検索フォーム表示-->
+    <form class="search_form" anction="{% url 'works_sum' %}" method="post">
+        {% csrf_token %}
+
+        <table>
+            {{ searchForm.as_table }}
+        </table>
+
+        <input class="btn" type="submit" name="search" value="検索">
+    </form>
+
+    <table class="data-table">
+        <tr class="thead">
+            <th>作品</th>
+            <th>時間合計</th>
+            <th>金額合計</th>
+        </tr>
+
+        <!--データ表示-->
+        {% for item in data %}
+            <tr>
+                <td data-label="作品">{{item.title}}</td>
+                <td data-label="時間合計">{{item.hourSum}}</td>
+                <td data-label="金額合計">{{item.moneySum}}</td>
+            </tr>
+        {% endfor %}
+
+    </table>
+
+    {% if data.has_previous %}
+        <a href="{% url 'works_sum' %}">&laquo;first</a>
+        <a href="{% url 'works_sum' %}{{data.previous_page_number}}">&laquo;prev</a>
+    {% endif %}
+
+    <span class="current">
+        [{{data.number}}/{{data.paginator.num_pages}}]
+    </span>
+
+    {% if data.has_next %}
+        <a href="{% url 'works_sum' %}{{data.next_page_number}}">next&raquo;</a>
+        <a href="{% url 'works_sum' %}{{data.paginator.num_pages}}">last&raquo;</a>
+    {% endif %}
+
+    <a class="return" href="{% url 'index' %}">戻る</a>
+
+</body>
+</html>

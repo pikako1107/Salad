@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Pos, Payment, Payment_detail
 from appManagement.models import User
 from appWorks.models import Works
-from .forms import posForm, searchPosForm, posModelForm, paymentDetailForm, paymentForm, searchPaymentForm, paymentModelForm, searchPaymentDetailForm, detailModelForm
+from .forms import posForm, searchPosForm, posModelForm, paymentDetailForm, paymentForm, searchPaymentForm, paymentModelForm, searchPaymentDetailForm, detailModelForm, worksSumForm
 import datetime
 import math
 
@@ -435,9 +435,113 @@ def delete(request, page, id):
 
 # 作品ごと集計ページ表示
 @login_required
-def works_sum(request):
-    pass
+def works_sum(request, num=1):
 
+    # リスト初期化
+    havingSQL = []
+
+    # 変数初期化
+    workID = ''
+    radio = '0'
+
+    # POST送信判定
+    if (request.method == 'POST'):
+        # 検索処理(having句)
+        havingSQL = search(request, 3)
+
+        # 作品検索
+        workID = request.POST['works']
+
+        # 配信検索
+        if request.POST['radio'] == '0':
+            # 未選択は検索しない
+            radio = ''
+        else:
+            radio = '0'
+
+    # データ抽出SQL作成
+    sql =  "SELECT w.id, "
+    sql += "w.title, "
+    sql += "SUM(pd.hour) AS hourSum, "
+    sql += "SUM(pd.money) AS moneySum "
+    sql += "FROM appMoney_payment_detail AS pd "
+    sql += "INNER JOIN appWorks_works AS w "
+    sql += "ON pd.work_id = w.id "
+
+    if workID != '':
+        # workIDがある場合は検索する
+        sql += "WHERE w.id = '" + workID + "' "
+
+    sql += "GROUP BY w.id, w.title "
+
+    if havingSQL:
+        # 条件を追加
+        sql += ' HAVING '
+
+        # ループをカウント
+        i = 0
+
+        for SQL in havingSQL:
+            if i == 0:
+                # ループ一回目
+                sql += SQL
+            else:
+                # ループ二回目以降
+                sql += 'AND ' + SQL
+
+            # カウントアップ
+            i += 1
+
+    if radio == '0':
+        # 0ならラジオも検索する
+        sql += " UNION "
+        sql += "SELECT 0 AS id, "
+        sql += "'配信' AS title, "
+        sql += "SUM(pd.hour) AS hourSum, "
+        sql += "SUM(pd.money) AS moneySum "
+        sql += "FROM appMoney_payment_detail AS pd "
+        sql += "WHERE pd.content = 2 "
+        sql += "GROUP BY pd.content "
+
+        if havingSQL:
+            # 条件を追加
+            sql += ' HAVING '
+
+            # ループをカウント
+            i = 0
+
+            for SQL in havingSQL:
+                if i == 0:
+                    # ループ一回目
+                    sql += SQL
+                else:
+                    # ループ二回目以降
+                    sql += 'AND ' + SQL
+
+                # カウントアップ
+                i += 1
+
+    # 末尾にセミコロン追加
+    sql += ';'
+
+    # 立替金テーブルデータ取得
+    data = Payment_detail.objects.raw(sql)
+    
+    # ページネーション設定
+    page = Paginator(data, 5)
+
+    params= {
+        'title':'さらぼー管理/作品ごと集計',
+        'type':'作品ごと集計',
+        'msg':message,
+        'searchForm':worksSumForm(),
+        'data':page.get_page(num),
+    }
+
+    if 'search' in request.POST:
+        params['searchForm'] = worksSumForm(request.POST)
+
+    return render(request, 'appMoney/works_sum.html', params)
 
 
 # 画面処理以外の関数
@@ -568,6 +672,7 @@ def create(request, mode, cnt=0):
           mode  0:残高テーブル検索
                 1:立替金テーブル検索
                 2:立替金詳細テーブル検索
+                3:作品ごと集計検索(ここで作るのは数値のみ)
     戻り値 WHERE句SQL(リスト)
 '''
 def search(request, mode): 
@@ -666,7 +771,7 @@ def search(request, mode):
                 'user':user,
                 }
 
-    else:
+    elif mode == 2:
         # 詳細テーブル検索
         table = "pd."
         
@@ -703,6 +808,23 @@ def search(request, mode):
                 'w.title':title,
                 }
 
+    else:
+        # 作品ごと集計検索
+        # 文字列はないのでダミー
+        strData = {}
+
+        # 数値検索対象
+        hourWhere = request.POST['choiceHourInt']      # 時間検索条件
+        moneyWhere = request.POST['choiceMoneyInt']    # 金額検索条件
+
+        # 辞書に格納{検索項目：検索条件(0:一致、1:以上、2:以下)}
+        intData = {
+                    'hourSum':hourWhere,
+                    'moneySum':moneyWhere,
+            }
+
+        # その他はないのでダミー
+        eachData = {}
 
     # 文字列検索SQL作成
     strSQL = strSearch(request, strData, table)

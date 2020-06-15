@@ -303,3 +303,42 @@ class detailModelForm(forms.ModelForm):
         model = Payment_detail
         fields = ['content', 'work_id', 'hour', 'money']
 
+# 作品集計検索フォーム
+class worksSumForm(forms.Form):
+    # 作品選択
+    works = forms.ModelChoiceField(queryset=Works.objects.all(),
+                                    label="作品", 
+                                    to_field_name="id",
+                                    required=False)
+
+    # 配信検索リスト
+    listRadio = [
+            (0, '未選択'),
+            (1, '配信')
+        ]
+
+    # 配信
+    radio = forms.ChoiceField(label="配信検索",
+                                choices=listRadio,
+                                initial=[0, '未選択'],
+                                required=False)                 # 配信検索
+
+
+    # 時間
+    hourSum = forms.FloatField(label="時間合計", required=False)   
+
+    choiceHourInt = forms.ChoiceField(label="時間検索条件",
+                                    choices=intRadioData,
+                                    initial=[0, '一致'],
+                                    required=False,
+                                    widget=forms.RadioSelect())  # 時間検索項目
+
+    # 金額
+    moneySum = forms.IntegerField(label="金額合計", required=False)  
+   
+    choiceMoneyInt = forms.ChoiceField(label="金額検索条件",
+                                    choices=intRadioData,
+                                    initial=[0, '一致'],
+                                    required=False,
+                                    widget=forms.RadioSelect())  # 金額検索項目    
+

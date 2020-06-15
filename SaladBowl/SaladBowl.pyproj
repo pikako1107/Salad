@@ -120,6 +120,7 @@
     <Content Include="appMoney\templates\appMoney\blance.html" />
     <Content Include="appMoney\templates\appMoney\delete.html" />
     <Content Include="appMoney\templates\appMoney\edit.html" />
+    <Content Include="appMoney\templates\appMoney\works_sum.html" />
     <Content Include="appProducts\static\css\products.css" />
     <Content Include="appProducts\static\js\products.js" />
     <Content Include="appProducts\templates\appProducts\delete.html" />
