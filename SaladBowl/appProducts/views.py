@@ -21,6 +21,7 @@ chk = True
 def products(request, num=1):
 
     global chk
+    global message
 
     # リスト初期化
     whereSQL = []
@@ -51,12 +52,14 @@ def products(request, num=1):
             # 保存
             insertData.save()
 
-            global message
             message = "データを登録しました。"
 
         else:
             # 検索処理
             whereSQL = search(request, 0)
+
+            # メッセージ初期化
+            message = ''
 
     # SQL
     sql = 'SELECT p.id, p.name, p.price, s.set_name, p.stock, p.owner '
@@ -124,6 +127,7 @@ def products(request, num=1):
 def sets(request, num=1):
 
     global chk
+    global message
 
     # リスト初期化
     whereSQL = []
@@ -150,12 +154,14 @@ def sets(request, num=1):
             # 保存
             insertData.save()
 
-            global message
             message = "データを登録しました。"
 
         else:  
             # 検索処理
             whereSQL = search(request, 1)
+
+            # メッセージ初期化
+            message = ''
 
             sql = "SELECT * FROM set_products "
 
@@ -220,6 +226,7 @@ def sets(request, num=1):
 def sales(request, num=1):
 
     global chk
+    global message
 
     # リスト初期化
     whereSQL = []
@@ -259,12 +266,13 @@ def sales(request, num=1):
                                int(dictData['売上商品ID']), 
                                int(dictData['売上個数']))
 
-                global message
                 message = "データを登録しました。"
 
         else:
             # 検索処理
             whereSQL = search(request, 2)
+            # メッセージ初期化
+            message = ''
 
     # 売上データ取得SQL
     sql = 'SELECT s.sales_id, s.date, s.type, p.name, s.price, s.count, s.other '

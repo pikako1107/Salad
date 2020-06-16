@@ -73,9 +73,15 @@
     <Compile Include="appProducts\__init__.py" />
     <Compile Include="appWorks\admin.py" />
     <Compile Include="appWorks\apps.py" />
+    <Compile Include="appWorks\forms.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="appWorks\migrations\__init__.py" />
     <Compile Include="appWorks\models.py" />
     <Compile Include="appWorks\tests.py" />
+    <Compile Include="appWorks\urls.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="appWorks\views.py" />
     <Compile Include="appWorks\__init__.py" />
     <Compile Include="manage.py" />
@@ -107,6 +113,9 @@
     <Folder Include="appProducts\templates\appProducts\" />
     <Folder Include="appWorks\" />
     <Folder Include="appWorks\migrations\" />
+    <Folder Include="appWorks\static\" />
+    <Folder Include="appWorks\static\css\" />
+    <Folder Include="appWorks\static\js\" />
     <Folder Include="appWorks\templates\" />
     <Folder Include="appWorks\templates\appWorks\" />
     <Folder Include="SaladBowl\" />
@@ -126,7 +135,9 @@
     <Content Include="appProducts\templates\appProducts\delete.html" />
     <Content Include="appProducts\templates\appProducts\edit.html" />
     <Content Include="appProducts\templates\appProducts\products.html" />
-    <Content Include="appWorks\templates\appWorks\index.html" />
+    <Content Include="appWorks\static\css\works.css" />
+    <Content Include="appWorks\static\js\works.js" />
+    <Content Include="appWorks\templates\appWorks\works.html" />
     <Content Include="requirements.txt" />
     <Content Include="db.sqlite3" />
     <None Include="SaladBowl20200524010840 - Web Deploy.pubxml" />

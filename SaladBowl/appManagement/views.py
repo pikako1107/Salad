@@ -23,7 +23,11 @@ def index(request):
             'blance', 
             'payment', 
             'payment_detail', 
-            'works_sum')
+            'works_sum',
+            'works',
+            'cast',
+            'progress',
+            'work_count')
 
     params = {
             'title':'さらぼー管理ツール',

@@ -25,6 +25,7 @@ chk = True
 def blance(request, num=1):
 
     global chk
+    global message
 
     # リスト初期化
     whereSQL = []
@@ -51,12 +52,13 @@ def blance(request, num=1):
                 # 保存
                 insertData.save()
 
-                global message
                 message = "データを登録しました。"
 
         else:
             # 検索処理
             whereSQL = search(request, 0)
+            # メッセージ初期化
+            message = ''
     
     # データ抽出SQL作成
     sql = 'SELECT id, posDate, blance, user, money, note '
@@ -126,6 +128,7 @@ def blance(request, num=1):
 def payment(request, num=1):
 
     global chk
+    global message
 
     # リスト初期化
     whereSQL = []
@@ -153,12 +156,13 @@ def payment(request, num=1):
                 # 保存
                 insertData.save()
 
-                global message
                 message = "データを登録しました。"
 
         else:
             # 検索処理
             whereSQL = search(request, 1)
+            # メッセージ初期化
+            message = ''
             
 
     # データ抽出SQL作成
@@ -226,6 +230,7 @@ def payment(request, num=1):
 def payment_detail(request, num=1):
 
     global chk
+    global message
 
     # リスト初期化
     whereSQL = []
@@ -249,12 +254,14 @@ def payment_detail(request, num=1):
             # 保存
             insertData.save()
 
-            global message
             message = "データを登録しました。"
 
         else:
             # 検索処理
             whereSQL = search(request, 2)
+
+            # メッセージ初期化
+            message = ''
 
     # データ抽出SQL作成
     sql =  "SELECT p.payDate, "

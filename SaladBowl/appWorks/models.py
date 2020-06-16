@@ -12,3 +12,17 @@ class Works(models.Model):
 
     def __str__(self):
         return self.title
+
+class Cast(models.Model):
+    # キャストテーブル
+    workID = models.IntegerField()
+    character = models.CharField(max_length=45)
+    cast = models.CharField(max_length=45)
+    status = models.BooleanField(default=False)
+
+class Progress(models.Model):
+    # 進捗テーブル
+    workID = models.IntegerField()
+    editPro = models.BooleanField(default=False)
+    illustPro = models.BooleanField(default=False)
+    animaPro = models.BooleanField(default=False)
