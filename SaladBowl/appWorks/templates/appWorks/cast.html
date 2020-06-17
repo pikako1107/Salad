@@ -23,7 +23,7 @@
     {% endif %}
 
     <!-- 登録フォーム表示 -->
-    <form class="input_form" anction="{% url 'works' %}" method="post">
+    <form class="input_form" anction="{% url 'cast' %}" method="post">
         {% csrf_token %}
 
         <table>
@@ -34,7 +34,7 @@
     </form>
 
     <!-- 検索フォーム表示 -->
-    <form class="search_form" anction="{% url 'works' %}" method="post">
+    <form class="search_form" anction="{% url 'cast' %}" method="post">
         {% csrf_token %}
 
         <table>
@@ -46,27 +46,21 @@
 
     <table class="data-table">
         <tr class="thead">
-            <th>ID</th>
             <th>作品名</th>
-            <th>脚本</th>
-            <th>編集</th>
-            <th>イラスト</th>
-            <th>動画</th>
-            <th>完了チェック</th>
+            <th>キャラクター</th>
+            <th>キャスト</th>
+            <th>ステータス</th>
         </tr>
 
         <!--データ表示-->
         {% for item in data %}
             <tr>
-                <td class="data-id">{{item.id}}</td>
                 <td data-label="作品名">{{item.title}}</td>
-                <td data-label="脚本">{{item.writer}}</td>
-                <td data-label="編集">{{item.editor}}</td>
-                <td data-label="イラスト">{{item.illustrator}}</td>
-                <td data-label="動画">{{item.animator}}</td>
-                <td data-label="完了チェック">{{item.completion}}</td>
-                <td><a href="{% url 'edit' page='works' id=item.id %}">編集</a></td>
-                <td><a href="{% url 'delete' page='works' id=item.id %}">削除</a></td>
+                <td data-label="キャラクター">{{item.character}}</td>
+                <td data-label="キャスト">{{item.cast}}</td>
+                <td data-label="ステータス">{{item.status}}</td>
+                <td><a href="{% url 'edit' page='cast' id=item.id %}">編集</a></td>
+                <td><a href="{% url 'delete' page='cast' id=item.id %}">削除</a></td>
             </tr>
         {% endfor %}
 
@@ -74,8 +68,8 @@
 
     <div class="pagination">
         {% if data.has_previous %}
-            <a href="{% url 'works' %}">&laquo;first</a>
-            <a href="{% url 'works' %}{{data.previous_page_number}}">&laquo;prev</a>
+            <a href="{% url 'cast' %}">&laquo;first</a>
+            <a href="{% url 'cast' %}{{data.previous_page_number}}">&laquo;prev</a>
         {% endif %}
 
         <span class="current">
@@ -83,8 +77,8 @@
         </span>
 
         {% if data.has_next %}
-            <a href="{% url 'works' %}{{data.next_page_number}}">next&raquo;</a>
-            <a href="{% url 'works' %}{{data.paginator.num_pages}}">last&raquo;</a>
+            <a href="{% url 'cast' %}{{data.next_page_number}}">next&raquo;</a>
+            <a href="{% url 'cast' %}{{data.paginator.num_pages}}">last&raquo;</a>
         {% endif %}
     </div>
 

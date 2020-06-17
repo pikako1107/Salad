@@ -559,7 +559,7 @@ def works_sum(request, num=1):
                 2:立替金詳細テーブル更新
     戻り値 登録データ(辞書)
 '''
-def create(request, mode, cnt=0):
+def create(request, mode):
 
     global message
     global money_1hour

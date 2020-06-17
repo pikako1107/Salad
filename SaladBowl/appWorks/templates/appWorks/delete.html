@@ -1,0 +1,75 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/works.css' %}">
+    <title>{{title}}</title>
+</head>
+
+<body>
+
+    <h2>{{info}}</h2>
+
+    <table>
+        {% if type == '作品' %}
+            <!--作品データ表示--> 
+            <tr>
+                <th class="del_header">作品名</th><td class="del_item">{{obj.title}}</td>
+            </tr>
+            <tr>
+                <th class="del_header">脚本</th><td class="del_item">{{obj.writer}}</td>
+            </tr>
+            <tr>
+                <th class="del_header">編集</th><td class="del_item">{{obj.editor}}</td>
+            </tr>
+            <tr>
+                <th class="del_header">イラスト</th><td class="del_item">{{obj.illustrator}}</td>
+            </tr>
+            <tr>
+                <th class="del_header">動画</th><td class="del_item">{{obj.animator}}</td>
+            </tr>
+            <tr>
+                <th class="del_header">完了チェック</th><td class="del_item">{{obj.completion}}</td>
+            </tr>
+        {% elif type == 'キャスト' %}
+            <!--キャストデータ表示-->
+            <tr>
+                <th class="del_header">キャラクター</th><td class="del_item">{{obj.character}}</td>
+            </tr>
+            <tr>
+                <th class="del_header">キャスト</th><td class="del_item">{{obj.cast}}</td>
+            </tr>
+            <tr>
+                <th class="del_header">ステータス</th><td class="del_item">{{obj.status}}</td>
+            </tr>
+        {% else %}
+            <!--立替金詳細データ表示-->
+            <tr>
+                <th class="del_header">ID</th><td class="del_item">{{obj.id}}</td>
+            </tr>
+            <tr>
+                <th class="del_header">活動内容</th><td class="del_item">{{obj.content}}</td>
+            </tr>
+            <tr>
+                <th class="del_header">作品</th><td class="del_item">{{obj.work_id}}</td>
+            </tr>
+            <tr>
+                <th class="del_header">時間</th><td class="del_item">{{obj.hour}}</td>
+            </tr>
+            <tr>
+                <th class="del_header">金額</th><td class="del_item">{{obj.money}}</td>
+            </tr>
+        {% endif %}
+    </table>
+
+    <form anction="{{ request.META.HTTP_REFERER }}" method="post">
+        {% csrf_token %}
+        <input class="btn" type="submit" value="削除" >
+    </form>
+
+    <a class="return" href="{{request.META.HTTP_REFERER}}">戻る</a>
+
+</body>
+</html>

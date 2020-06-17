@@ -11,6 +11,6 @@ urlpatterns = [
     path('progress/<int:num>', appWorks.views.progress, name='progress'),
     path('work_count/', appWorks.views.work_count, name='work_count'),
     path('work_count/<int:num>', appWorks.views.work_count, name='work_count'),
-    #path('<page>/edit/<int:id>', appWorks.views.edit, name='edit'),
-    #path('<page>/delete/<int:id>', appWorks.views.delete, name='delete'),
+    path('<page>/edit/<int:id>', appWorks.views.edit, name='edit'),
+    path('<page>/delete/<int:id>', appWorks.views.delete, name='delete'),
 ]
