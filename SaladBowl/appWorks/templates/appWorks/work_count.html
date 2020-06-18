@@ -1,0 +1,40 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/works.css' %}">
+    <title>{{title}}</title>
+</head>
+<body>
+    <h1>{{title}}</h1>
+
+    <table class="data-table">
+        <tr class="thead">
+            <th>ユーザー</th>
+            <th>収録</th>
+            <th>編集</th>
+            <th>イラスト</th>
+            <th>動画</th>
+            <th>合計</th>
+        </tr>
+
+        <!--データ表示-->
+        {% for item in data %}
+            <tr>
+                <td data-label="ユーザー">{{item.name}}</td>
+                <td data-label="収録">{{item.castCnt}}</td>
+                <td data-label="編集">{{item.editCnt}}</td>
+                <td data-label="イラスト">{{item.illustCnt}}</td>
+                <td data-label="動画">{{item.animaCnt}}</td>
+                <td data-label="合計">{{item.allCnt}}</td>
+            </tr>
+        {% endfor %}
+
+    </table>
+
+    <a class="return" href="{% url 'index' %}">戻る</a>
+
+</body>
+</html>

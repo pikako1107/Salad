@@ -1,0 +1,76 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/works.css' %}">
+    <title>{{title}}</title>
+</head>
+<body>
+    <h1>{{title}}</h1>
+
+    <p>{{msg}}</p>
+
+    <!-- 検索フォーム表示 -->
+    <form class="search_form" anction="{% url 'progress' %}" method="post">
+        {% csrf_token %}
+
+        <table>
+            {{ searchForm.as_table }}
+        </table>
+
+        <input class="btn" type="submit" name="search" value="検索">
+    </form>
+
+    <table class="data-table">
+        <tr class="thead">
+            <th>作品名</th>
+            <th>収録進捗</th>
+            <th>編集担当</th>
+            <th>編集進捗</th>
+            <th>イラスト担当</th>
+            <th>イラスト進捗</th>
+            <th>動画担当</th>
+            <th>動画進捗</th>
+            <th>進捗率</th>
+        </tr>
+
+        <!--データ表示-->
+        {% for item in data %}
+            <tr>
+                <td data-label="作品名">{{item.title}}</td>
+                <td data-label="収録進捗">{{item.castPro}}%</td>
+                <td data-label="編集担当">{{item.editor}}</td>
+                <td data-label="編集進捗">{{item.editPro}}</td>
+                <td data-label="イラスト担当">{{item.illustrator}}</td>
+                <td data-label="イラスト進捗">{{item.illustPro}}</td>
+                <td data-label="動画担当">{{item.animator}}</td>
+                <td data-label="動画進捗">{{item.animaPro}}</td>
+                <td data-label="進捗率">{{item.allPro}}%</td>
+                <td><a href="{% url 'edit' page='progress' id=item.id %}">編集</a></td>
+            </tr>
+        {% endfor %}
+
+    </table>
+
+    <div class="pagination">
+        {% if data.has_previous %}
+            <a href="{% url 'progress' %}">&laquo;first</a>
+            <a href="{% url 'progress' %}{{data.previous_page_number}}">&laquo;prev</a>
+        {% endif %}
+
+        <span class="current">
+            [{{data.number}}/{{data.paginator.num_pages}}]
+        </span>
+
+        {% if data.has_next %}
+            <a href="{% url 'progress' %}{{data.next_page_number}}">next&raquo;</a>
+            <a href="{% url 'progress' %}{{data.paginator.num_pages}}">last&raquo;</a>
+        {% endif %}
+    </div>
+
+    <a class="return" href="{% url 'index' %}">戻る</a>
+
+</body>
+</html>

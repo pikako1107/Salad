@@ -2,7 +2,7 @@ from django import forms
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.core.paginator import Paginator
-from django.db.models import Sum, Max
+from django.db.models import Sum
 from django.contrib.auth.decorators import login_required
 from .models import Pos, Payment, Payment_detail
 from appManagement.models import User

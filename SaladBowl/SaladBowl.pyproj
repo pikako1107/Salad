@@ -140,7 +140,9 @@
     <Content Include="appWorks\templates\appWorks\cast.html" />
     <Content Include="appWorks\templates\appWorks\delete.html" />
     <Content Include="appWorks\templates\appWorks\edit.html" />
+    <Content Include="appWorks\templates\appWorks\progress.html" />
     <Content Include="appWorks\templates\appWorks\works.html" />
+    <Content Include="appWorks\templates\appWorks\work_count.html" />
     <Content Include="requirements.txt" />
     <Content Include="db.sqlite3" />
     <None Include="SaladBowl20200524010840 - Web Deploy.pubxml" />

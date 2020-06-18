@@ -160,6 +160,71 @@ class searchCastForm(forms.Form):
                                required=False,
                                initial=[2, '未選択'])
 
+# 進捗検索フォーム
+class searchProgressForm(forms.Form):
+    # タイトルID
+    workID = forms.ModelChoiceField(queryset=Works.objects.all(),
+                                    label="作品", 
+                                    to_field_name="id",
+                                    required=False)
+    # 収録進捗
+    castPro = forms.IntegerField(label="収録進捗", 
+                               required=False)
+    # 収録進捗検索項目
+    choiceCastPro = forms.ChoiceField(label="収録進捗検索条件",
+                                    choices=intRadioData,
+                                    required=False,
+                                    initial=[0, '一致'],
+                                    widget=forms.RadioSelect()) 
+    # 編集担当
+    editor = forms.ModelChoiceField(queryset=User.objects.all(),
+                                    label="編集担当", 
+                                    to_field_name="id",
+                                    required=False) 
+    # 検索用進捗
+    listProgress = [
+            (0, '作業中'),
+            (1, '完了'),
+            (2, '未選択')
+        ]
+
+    # 編集進捗
+    editPro = forms.ChoiceField(label="編集進捗", 
+                               choices=listProgress,
+                               required=False,
+                               initial=[2, '未選択'])
+
+    # イラスト担当
+    illustrator = forms.ModelChoiceField(queryset=User.objects.all(),
+                                        label="イラスト担当", 
+                                        to_field_name="id",
+                                        required=False) 
+    # イラスト進捗
+    illustPro = forms.ChoiceField(label="イラスト進捗", 
+                                   choices=listProgress,
+                                   required=False,
+                                   initial=[2, '未選択'])
+    # 動画担当
+    animator = forms.ModelChoiceField(queryset=User.objects.all(),
+                                label="動画担当", 
+                                to_field_name="id",
+                                required=False) 
+    # 動画進捗
+    animaPro = forms.ChoiceField(label="動画進捗", 
+                                choices=listProgress,
+                                required=False,
+                                initial=[2, '未選択'])
+    # 進捗率
+    allPro = forms.IntegerField(label="進捗率", 
+                               required=False)
+
+    # 進捗率検索項目
+    choiceAllPro = forms.ChoiceField(label="進捗率検索条件",
+                                    choices=intRadioData,
+                                    required=False,
+                                    initial=[0, '一致'],
+                                    widget=forms.RadioSelect()) 
+
 # 作品モデルフォーム
 class worksModelForm(forms.ModelForm):
     class Meta:
@@ -171,5 +236,11 @@ class castModelForm(forms.ModelForm):
     class Meta:
         model = Cast
         fields = ['workID', 'character', 'cast', 'status']
+
+# 進捗モデルフォーム
+class progressModelForm(forms.ModelForm):
+    class Meta:
+        model = Progress
+        fields = ['workID', 'editPro', 'illustPro', 'animaPro']
 
 
