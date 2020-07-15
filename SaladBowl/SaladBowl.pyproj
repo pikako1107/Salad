@@ -4,8 +4,9 @@
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <Name>SaladBowl</Name>
     <RootNamespace>SaladBowl</RootNamespace>
-    <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
+    <InterpreterId>MSBuild|env1|$(MSBuildProjectFullPath)</InterpreterId>
     <TestFramework>Pytest</TestFramework>
+    <SuppressConfigureTestFrameworkPrompt>true</SuppressConfigureTestFrameworkPrompt>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -32,6 +33,19 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="appChat\admin.py" />
+    <Compile Include="appChat\apps.py" />
+    <Compile Include="appChat\forms.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="appChat\migrations\__init__.py" />
+    <Compile Include="appChat\models.py" />
+    <Compile Include="appChat\tests.py" />
+    <Compile Include="appChat\urls.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="appChat\views.py" />
+    <Compile Include="appChat\__init__.py" />
     <Compile Include="appManagement\admin.py" />
     <Compile Include="appManagement\apps.py" />
     <Compile Include="appManagement\forms.py">
@@ -91,6 +105,13 @@
     <Compile Include="SaladBowl\wsgi.py" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="appChat\" />
+    <Folder Include="appChat\migrations\" />
+    <Folder Include="appChat\static\" />
+    <Folder Include="appChat\static\css\" />
+    <Folder Include="appChat\static\js\" />
+    <Folder Include="appChat\templates\" />
+    <Folder Include="appChat\templates\appChat\" />
     <Folder Include="appManagement\" />
     <Folder Include="appManagement\migrations\" />
     <Folder Include="appManagement\static\" />
@@ -121,6 +142,9 @@
     <Folder Include="SaladBowl\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="appChat\static\css\room.css" />
+    <Content Include="appChat\static\js\room.js" />
+    <Content Include="appChat\templates\appChat\room.html" />
     <Content Include="appManagement\static\css\index.css" />
     <Content Include="appManagement\templates\appManagement\index.html" />
     <Content Include="appManagement\templates\appManagement\login.html" />
@@ -153,10 +177,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Interpreter Include="env\">
-      <Id>env</Id>
-      <Version>3.6</Version>
-      <Description>env (Python 3.6 (64-bit))</Description>
+    <Interpreter Include="env1\">
+      <Id>env1</Id>
+      <Version>3.7</Version>
+      <Description>env1 (Python 3.7 (64-bit))</Description>
       <InterpreterPath>Scripts\python.exe</InterpreterPath>
       <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
       <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>

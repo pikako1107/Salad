@@ -27,7 +27,8 @@ def index(request):
             'works',
             'cast',
             'progress',
-            'work_count')
+            'work_count',
+            'room')
 
     params = {
             'title':'さらぼー管理ツール',

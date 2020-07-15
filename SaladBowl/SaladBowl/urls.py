@@ -10,6 +10,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from appProducts import views
 from appMoney import views
 from appWorks import views
+from appChat import views
 from appManagement import views
 
 
@@ -18,6 +19,7 @@ urlpatterns = [
     path('appProducts/', include('appProducts.urls')),
     path('appMoney/', include('appMoney.urls')),
     path('appWorks/', include('appWorks.urls')),
+    path('appChat/', include('appChat.urls')),
     path('appManagement/', include('appManagement.urls')),
     path('', views.MyLoginView.as_view(), name="login"),
 ]

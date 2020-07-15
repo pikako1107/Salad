@@ -23,7 +23,7 @@
     {% endif %}
 
     <!-- 登録フォーム表示 -->
-    <form class="input_form" anction="{% url 'blance' %}" method="post">
+    <form class="input_form" action="{% url 'blance' %}" method="post">
         {% csrf_token %}
 
         <table>
@@ -34,7 +34,7 @@
     </form>
 
     <!-- 検索フォーム表示 -->
-    <form class="search_form" anction="{% url 'blance' %}" method="post">
+    <form class="search_form" action="{% url 'blance' %}" method="post">
         {% csrf_token %}
 
         <table>

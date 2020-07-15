@@ -1,0 +1,16 @@
+body {
+    padding-left: 15px;
+}
+
+.btn {
+    margin: 10px 10px;
+    font-size: 20px;
+}
+
+.form {
+    display: none;
+}
+
+.indication {
+    display: block;
+}

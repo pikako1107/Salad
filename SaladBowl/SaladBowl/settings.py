@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'appMoney',
     'appManagement',
     'appWorks',
+    'appChat',
 ]
 
 # Middleware framework

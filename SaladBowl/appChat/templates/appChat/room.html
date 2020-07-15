@@ -1,0 +1,50 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/room.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <title>{{title}}</title>
+</head>
+<body>
+    <h1>{{title}}</h1>
+
+    <button type="button" name="create" class="btn" id="createBtn">作成</button>
+    <button type="button" name="delete" class="btn" id="deleteBtn">削除</button>
+
+    <!--ルーム作成フォーム-->
+    <form class="form" method="post" id="createForm">
+        {% csrf_token %}
+
+        <table>
+            {{ createForm.as_table }}
+        </table>
+
+        <input class="btn" type="submit" name="input" value="作成">
+        <button class="btn return" type="button" name="return" id="returnBtn">戻る</button>
+    </form>
+
+    <!--ルーム削除フォーム-->
+    <form class="form" method="post" id="deleteForm">
+        {% csrf_token %}
+
+        <table>
+            {{ deleteForm.as_table }}
+        </table>
+
+        <input class="btn" type="submit" name="delete" value="削除">
+        <button class="btn return" type="button" name="return">戻る</button>
+    </form>
+
+    <ul>
+        <li><a href="#" class="chatLink">チャットルーム</a></li>
+    </ul>
+
+    <a class="return" href="{% url 'index' %}">戻る</a>
+
+    <script src="{% static 'js/room.js' %}"></script>
+
+</body>
+</html>
