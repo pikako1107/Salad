@@ -1,0 +1,36 @@
+body {
+    padding-left: 15px;
+}
+
+ul {
+    list-style-type: none;
+}
+
+#chat {
+    border: 1px solid black;
+    width: 60%;
+}
+
+table {
+    margin: 10px;
+    font-size: 14px;
+}
+
+table tr th {
+    background-color: #099;
+    color: white;
+    padding: 2px 10px;
+    border-width: 2px;
+}
+
+table tr td {
+    background-color: #eee;
+    color: #666;
+    padding: 2px 10px;
+    border-width: 2px;
+}
+
+.return {
+    display: block;
+    margin-top: 15px;
+}

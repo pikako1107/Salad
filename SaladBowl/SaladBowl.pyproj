@@ -144,6 +144,8 @@
   <ItemGroup>
     <Content Include="appChat\static\css\room.css" />
     <Content Include="appChat\static\js\room.js" />
+    <Content Include="appChat\static\css\chat.css" />
+    <Content Include="appChat\templates\appChat\chat.html" />
     <Content Include="appChat\templates\appChat\room.html" />
     <Content Include="appManagement\static\css\index.css" />
     <Content Include="appManagement\templates\appManagement\index.html" />

@@ -1,0 +1,35 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/chat.css' %}">
+    <title>{{title}}</title>
+</head>
+<body>
+    <h1>{{title}}</h1>
+
+    <div id="chat">
+        <ul>
+            <li>チャットを表示</li>
+            <li>チャットを表示1</li>
+            <li>チャットを表示2</li>
+        </ul>
+    </div>
+
+    <!--コメント入力フォーム-->
+    <form class="form" method="post" id="commentForm">
+        {% csrf_token %}
+
+        <table>
+            {{ commentForm.as_table }}
+        </table>
+
+        <input class="btn" type="submit" name="comment" value="送信">
+    </form>
+
+    <a class="return" href="{% url 'room' %}">戻る</a>
+
+</body>
+</html>

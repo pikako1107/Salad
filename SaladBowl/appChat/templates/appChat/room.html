@@ -14,6 +14,8 @@
     <button type="button" name="create" class="btn" id="createBtn">作成</button>
     <button type="button" name="delete" class="btn" id="deleteBtn">削除</button>
 
+    <div id="mask"></div>
+    
     <!--ルーム作成フォーム-->
     <form class="form" method="post" id="createForm">
         {% csrf_token %}
@@ -39,7 +41,9 @@
     </form>
 
     <ul>
-        <li><a href="#" class="chatLink">チャットルーム</a></li>
+        {% for item in data %}
+            <li>{{item.id}}. <a href="{% url 'chat' name=item.name id=item.id %}" class="chatLink">{{item.name}}</a></li>
+        {% endfor %}
     </ul>
 
     <a class="return" href="{% url 'index' %}">戻る</a>
