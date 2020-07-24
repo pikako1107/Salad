@@ -36,6 +36,11 @@
     box-sizing: border-box;
 }
 
+#userName {
+    color: blue;
+    font-size: 24px;
+}
+
 body {
     padding-left: 15px;
 }

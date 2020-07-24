@@ -5,6 +5,9 @@ class Room(models.Model):
     # ルームテーブル
     name = models.CharField(max_length=200) # ルーム名
 
+    def __str__(self):
+        return self.name
+
 class Chat(models.Model):
     # チャットテーブル
     roomID = models.IntegerField()                  # ルームID
