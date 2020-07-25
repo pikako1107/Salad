@@ -9,13 +9,38 @@
 </head>
 <body>
     <h1>{{title}}</h1>
+    
+    <p>{{msg}}</p>
 
-    <div id="chat">
-        <ul>
-            <li>チャットを表示</li>
-            <li>チャットを表示1</li>
-            <li>チャットを表示2</li>
-        </ul>
+    <div id="container">
+        <div id="chat">
+            <ul>
+                <li class="commentList">
+                    <img src="{% static 'image/pika.png' %}" >
+                    <div>チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示</div>
+                </li>
+                <li>チャットを表示1</li>
+                <li>チャットを表示2</li>
+            </ul>
+        </div>
+
+        <div id="check">
+            確認状況
+
+            <p class="fileName">ファイル名</p>
+
+            <ul>
+                <li class="checkList">
+                    ぴか：未確認
+                </li>
+                <li class="checkList">
+                    時雨：未確認
+                </li>
+                <li class="checkList">
+                    くま：確認済み
+                </li>
+            </ul>
+        </div>
     </div>
 
     <!--コメント入力フォーム-->
@@ -26,7 +51,18 @@
             {{ commentForm.as_table }}
         </table>
 
-        <input class="btn" type="submit" name="comment" value="送信">
+        <input class="btn" type="submit" name="comment" value="コメント送信">
+    </form>
+
+    <!--ファイルアップロードフォーム-->
+    <form class="form" method="post" id="fileForm" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <table>
+            {{ fileForm.as_table }}
+        </table>
+
+        <input class="btn" type="submit" name="upload" value="アップロード">
     </form>
 
     <a class="return" href="{% url 'room' %}">戻る</a>

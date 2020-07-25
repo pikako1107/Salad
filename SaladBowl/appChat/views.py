@@ -1,8 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from .forms import createForm, deleteForm, postCommentForm
+from .forms import createForm, deleteForm, postCommentForm, fileUploadForm
 from .models import Room, Chat, File, Check
+import datetime
 
 # グローバル変数
 message = ''
@@ -74,12 +75,83 @@ def room(request):
 @login_required
 def chat(request, name, id):
     
-    # 確認状況データ取得
+    global message
 
+    # メッセージ初期化
+    message = ''
+
+    # ログインユーザー取得
+    user = request.user
+
+    # POST送信判定
+    if (request.method == 'POST'):
+        # ボタン判定
+        if 'comment' in request.POST:
+            # コメント送信
+            pass
+
+        else:
+            # ファイルアップロード
+            # ファイルオブジェクト取得
+            objFile = File()
+
+            # データ取得
+            objFile.uptime = datetime.datetime.today()          # アップロード日時
+            objFile.roomID = id                                 # ルームID
+            objFile.name = request.FILES['uploadplace'].name    # ファイル名
+
+            # 確認期限
+            chkDate = request.POST['deadlineDate']  
+
+            # 日付チェック
+            lineDate = checkDate(chkDate)
+
+            # 日付不正の場合処理を抜ける
+            if lineDate == '':
+                message = "日付が不正のため、ファイルを登録できませんでした。"
+                
+            else:
+                # フォームのインスタンス
+                fileForm = fileUploadForm(request.POST, request.FILES, instance=objFile)
+
+                if fileForm.is_valid(): 
+                    # 保存
+                    fileForm.save()
+
+                    # メッセージ表示
+                    message = "ファイルを登録しました。"
+
+                else:
+                    # エラーメッセージ表示
+                    message = "ファイルを登録できませんでした。"
+
+    # 確認状況データ取得
 
     params= {
         'title': name,
         'commentForm': postCommentForm,
+        'fileForm':fileUploadForm,
+        'user':user,
+        'msg':message,
     }
 
     return render(request, 'appChat/chat.html', params)
+
+
+''' 日付の妥当性チェック
+    引数: strDate　入力値
+    戻り値 正常:フォーマット変換した日付
+           異常:空文字
+'''
+def checkDate(strDate):
+    
+    # 戻り値を初期化
+    ans = ''
+
+    try:
+        # 日付を変換
+        ans = datetime.datetime.strptime(strDate, '%Y-%m-%d')
+        return ans
+
+    except ValueError:
+        return ans

@@ -1,6 +1,6 @@
 from django import forms
 from . import models
-from appChat.models import Room, Chat
+from appChat.models import Room, Chat, File
 
 # ルーム作成フォーム
 class createForm(forms.Form): 
@@ -21,5 +21,15 @@ class postCommentForm(forms.Form):
     comment = forms.CharField(widget=forms.Textarea(attrs={'cols': '80', 'rows': '10'}),
                               max_length=1000,
                               label="コメント")
+
+# ファイルアップロードフォーム
+class fileUploadForm(forms.ModelForm):
+    class Meta:
+        model = File
+        fields = ('uploadplace', 'deadlineDate')
+        labels = {
+            'uploadplace':'ファイル選択',
+            'deadlineDate':'確認期限',
+            }
 
 

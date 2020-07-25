@@ -110,6 +110,7 @@
     <Folder Include="appChat\static\" />
     <Folder Include="appChat\static\css\" />
     <Folder Include="appChat\static\js\" />
+    <Folder Include="appChat\static\image\" />
     <Folder Include="appChat\templates\" />
     <Folder Include="appChat\templates\appChat\" />
     <Folder Include="appManagement\" />
@@ -143,6 +144,17 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="appChat\static\css\room.css" />
+    <Content Include="appChat\static\image\e-ru.png" />
+    <Content Include="appChat\static\image\oichan.png" />
+    <Content Include="appChat\static\image\kuma.png" />
+    <Content Include="appChat\static\image\pika.png" />
+    <Content Include="appChat\static\image\aiwana.png" />
+    <Content Include="appChat\static\image\koba.png" />
+    <Content Include="appChat\static\image\ra-san.png" />
+    <Content Include="appChat\static\image\chikage.png" />
+    <Content Include="appChat\static\image\sigure.png" />
+    <Content Include="appChat\static\image\konno.png" />
+    <Content Include="appChat\static\image\souya.png" />
     <Content Include="appChat\static\js\room.js" />
     <Content Include="appChat\static\css\chat.css" />
     <Content Include="appChat\templates\appChat\chat.html" />
