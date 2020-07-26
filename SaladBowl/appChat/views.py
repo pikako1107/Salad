@@ -1,11 +1,13 @@
 from django.shortcuts import render
 from django.db.models import Max
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 from django.http import HttpResponse
 from .forms import createForm, deleteForm, postCommentForm, fileUploadForm
 from .models import Room, Chat, File, Check
 from appManagement.models import User
 import datetime
+import os
 
 # グローバル変数
 message = ''
@@ -46,6 +48,21 @@ def room(request):
             objChat = Chat.objects.filter(roomID = id)     # チャットテーブル
             objFile = File.objects.filter(roomID = id)     # ファイルテーブル
             objCheck = Check.objects.filter(roomID = id)   # 確認状況テーブル
+
+            # ループカウンター
+            i = 0
+
+            # ファイル名取得
+            for item in objFile:
+                # ファイルのパスを取得
+                path = settings.MEDIA_ROOT + '/' + str(item.uploadplace)
+                
+                # 対象ファイル削除
+                os.remove(path)
+
+                # カウントアップ
+                i += 1
+
 
             # ルームデータ削除
             objRoom.delete()
