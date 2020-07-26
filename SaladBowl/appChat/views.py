@@ -1,8 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
+from django.db.models import Max
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from .forms import createForm, deleteForm, postCommentForm, fileUploadForm
 from .models import Room, Chat, File, Check
+from appManagement.models import User
 import datetime
 
 # グローバル変数
@@ -81,14 +83,41 @@ def chat(request, name, id):
     message = ''
 
     # ログインユーザー取得
-    user = request.user
+    loginUser = request.user
 
     # POST送信判定
     if (request.method == 'POST'):
         # ボタン判定
         if 'comment' in request.POST:
             # コメント送信
-            pass
+            # データ取得
+            # 投稿コメント
+            requestComment = request.POST.getlist('comment') 
+            commentInsert = requestComment[0]
+
+            # ルームID
+            roomIDInsert = id                       
+
+            # ユーザー名(英語)
+            userEnglishInsert = loginUser
+
+            # ユーザー名(日本語)取得
+            userInsert = getUser(request,  loginUser)                
+
+            # 投稿日時
+            timeInsert = datetime.datetime.today()  
+
+            # インスタンス作成
+            insertChat = Chat(
+                                roomID = roomIDInsert,
+                                user = userInsert,
+                                userEnglish = userEnglishInsert,
+                                posttime = timeInsert,
+                                comment = commentInsert
+                )
+
+            # 保存
+            insertChat.save()
 
         else:
             # ファイルアップロード
@@ -118,6 +147,28 @@ def chat(request, name, id):
                     # 保存
                     fileForm.save()
 
+                    # 最新のデータを取得
+                    newData = File.objects.all().values('id','roomID').order_by('-uptime').first()
+
+                    # 各IDを変数に格納
+                    fileIDInsert = newData['id']
+                    roomIDInsert = newData['roomID']
+
+                    # ユーザーデータ取得
+                    users = createCheck()
+
+                    # 確認状況データ作成
+                    for userInsert in users:
+                        # インスタンス作成
+                        insertCheck = Check(
+                                            fileID = fileIDInsert,
+                                            roomID = roomIDInsert,
+                                            user = userInsert['name'],
+                            )
+
+                        # 保存
+                        insertCheck.save()
+
                     # メッセージ表示
                     message = "ファイルを登録しました。"
 
@@ -125,19 +176,40 @@ def chat(request, name, id):
                     # エラーメッセージ表示
                     message = "ファイルを登録できませんでした。"
 
+    else:
+        # GET送信
+        # ボタン判定
+        if 'check' in request.GET:
+            # 確認ボタン押下
+            updateCheck(request, loginUser, 0)
+
+        elif 'checkNo'  in request.GET:
+            # 期限内には無理ボタン押下
+            updateCheck(request, loginUser, 1)
+                            
+    # 投稿データ取得
+    dataChat = Chat.objects.filter(roomID=id).order_by('-posttime')
+
+    # ファイルデータ取得
+    dataFile = File.objects.filter(roomID=id).order_by('-uptime')
+
     # 確認状況データ取得
+    dataCheck = Check.objects.filter(roomID=id).exclude(checkBool=0).order_by('id')
 
     params= {
         'title': name,
         'commentForm': postCommentForm,
         'fileForm':fileUploadForm,
-        'user':user,
+        'user':loginUser,
         'msg':message,
+        'dataChat':dataChat,
+        'dataCheck':dataCheck,
+        'dataFile':dataFile,
     }
 
     return render(request, 'appChat/chat.html', params)
 
-
+# 画面処理以外の関数
 ''' 日付の妥当性チェック
     引数: strDate　入力値
     戻り値 正常:フォーマット変換した日付
@@ -155,3 +227,60 @@ def checkDate(strDate):
 
     except ValueError:
         return ans
+
+''' 確認状況データ作成(ユーザー取得)
+    戻り値 ユーザーデータ
+'''
+def createCheck():
+    # ユーザー取得
+    getUser = User.objects.exclude(EnglishName='').values('name')
+
+    return getUser 
+
+''' ユーザー名を取得
+    引数: request
+          loginName ログイン名
+    戻り値 ユーザー名(日本語)
+'''
+def getUser(request, loginName):
+        
+    # ユーザー
+    getObj = User.objects.values('name').get(EnglishName=loginName)
+
+    return getObj['name']
+
+''' 確認状況テーブル更新
+    引数：request
+          logUser   ログインユーザー(英語)      
+          mode  0:確認済み
+                1:期限内には無理
+    戻り値：なし
+'''
+def updateCheck(request, logUser, mode):
+    
+    # ファイルID取得
+    chkFileID = request.GET['fileID_dummy'] # ファイルID
+
+    # ユーザー名(日本語)取得
+    userName = getUser(request, logUser)
+
+    if mode == 0:
+        # 確認済み
+        chkDate = datetime.datetime.today()     # 確認日付
+        chkBool = True                          # 確認フラグ
+
+    else:
+        # 期限内には無理
+        chkBool = False                         # 確認フラグ
+
+    # 更新対象取得
+    objChk = Check.objects.get(fileID=chkFileID, user=userName)
+
+    # データ更新
+    objChk.checkBool = chkBool  # 確認フラグ
+
+    if mode == 0:
+        objChk.checkdate = chkDate     # 確認日
+
+    # 保存
+    objChk.save()

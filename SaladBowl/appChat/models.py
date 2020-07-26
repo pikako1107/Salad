@@ -13,6 +13,8 @@ class Chat(models.Model):
     # チャットテーブル
     roomID = models.IntegerField()                  # ルームID
     user = models.CharField(max_length=45)          # ユーザー名
+    userEnglish = models.CharField(max_length=45,
+                                   default='')      # ユーザー名(英語)
     posttime = models.DateTimeField()               # 登校時間
     comment = models.CharField(max_length=1000)     # コメント
 
@@ -30,7 +32,9 @@ class Check(models.Model):
     fileID = models.IntegerField()                  # ファイルID
     roomID = models.IntegerField()                  # ルームID
     user = models.CharField(max_length=45)          # ユーザー名
-    check = models.BooleanField(default=False)      # 確認状況  true:確認済み　false:未確認
+    checkBool = models.BooleanField(default=None,
+                                    null=True,
+                                    blank=True)     # 確認状況  null:未確認　true:確認済み　false:期限内には無理
     checkdate = models.DateField(blank=True, 
                                  null=True)         # 確認日   null:未確認　日付:確認済み
 

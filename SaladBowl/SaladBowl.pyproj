@@ -111,6 +111,7 @@
     <Folder Include="appChat\static\css\" />
     <Folder Include="appChat\static\js\" />
     <Folder Include="appChat\static\image\" />
+    <Folder Include="appChat\static\js\audiojs\" />
     <Folder Include="appChat\templates\" />
     <Folder Include="appChat\templates\appChat\" />
     <Folder Include="appManagement\" />
@@ -155,6 +156,9 @@
     <Content Include="appChat\static\image\sigure.png" />
     <Content Include="appChat\static\image\konno.png" />
     <Content Include="appChat\static\image\souya.png" />
+    <Content Include="appChat\static\js\audiojs\audio.min.js" />
+    <Content Include="appChat\static\js\audiojs\audiojs.swf" />
+    <Content Include="appChat\static\js\audiojs\player-graphics.gif" />
     <Content Include="appChat\static\js\room.js" />
     <Content Include="appChat\static\css\chat.css" />
     <Content Include="appChat\templates\appChat\chat.html" />

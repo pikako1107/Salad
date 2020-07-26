@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{% static 'css/chat.css' %}">
+    <script src="{% static 'js/audiojs/audio.min.js' %}"></script>
     <title>{{title}}</title>
 </head>
 <body>
@@ -15,31 +16,73 @@
     <div id="container">
         <div id="chat">
             <ul>
-                <li class="commentList">
-                    <img src="{% static 'image/pika.png' %}" >
-                    <div>チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示チャットを表示</div>
-                </li>
-                <li>チャットを表示1</li>
-                <li>チャットを表示2</li>
+                {% for data in dataChat %}
+
+                    {% if user.get_username == data.userEnglish %}
+                        <li class="commentList LeftSide">
+
+                    {% else %}
+                        <li class="commentList RightSide">
+                    {% endif %}
+                            <div class="icon">
+                                <img src="{% static "" %}image/{{data.userEnglish}}.png" >
+                                <p class="postName">{{data.user}}</p>
+                            </div>
+                            <div class="comment">
+                                {{data.comment}}
+                                <p class="postTime">{{data.posttime|date:"Y-m-d H:i:s"}}</p>
+                            </div>
+                        </li>
+
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div id="file">
+            送信ファイル
+
+            <ul>
+                <!--ファイル数ループ-->
+                {% for file in dataFile %}
+                    <li>
+                        <p class="fileName">{{file.name}}</p>
+                        <p class="deadline">確認期限：{{file.deadlineDate|date:"Y-m-d"}}</p>
+                        <audio src="{% static "" %}media/{{file.uploadplace}}" preload="none"></audio>
+                    
+                        <form class="btnForm" method="get">
+                            {% csrf_token %}
+                            <input type="text" name="fileID_dummy" class="fileID_dummy" value="{{file.id}}">
+                            <input class="btn checkBtn" type="submit" name="check" value="確認">
+                            <input class="btn checkBtn" type="submit" name="checkNo" value="期限内には無理"> 
+                        </form>
+                    </li>
+                {% endfor %}
             </ul>
         </div>
 
         <div id="check">
             確認状況
+            <!--ファイル名ループ-->
+            {% for file in dataFile %}
+                <p class="fileName">{{file.name}}</p>
 
-            <p class="fileName">ファイル名</p>
+                <ul>
+                    <!--確認状況ループ-->
+                    {% for check in dataCheck %}
+                        <!--ファイルIDが同じものを表示-->
+                        {% if file.id == check.fileID %}
+                            <li class="checkList">
+                                {{check.user}}：{% if check.checkdate == None %}未確認
+                                                {% else %}{{check.checkdate|date:"Y-m-d"}} 確認
+                                                {% endif %}
+                            </li>
+                        {% endif %}
 
-            <ul>
-                <li class="checkList">
-                    ぴか：未確認
-                </li>
-                <li class="checkList">
-                    時雨：未確認
-                </li>
-                <li class="checkList">
-                    くま：確認済み
-                </li>
-            </ul>
+                    {% endfor %}
+
+                </ul>
+            {% endfor %}
+
         </div>
     </div>
 
@@ -55,7 +98,7 @@
     </form>
 
     <!--ファイルアップロードフォーム-->
-    <form class="form" method="post" id="fileForm" enctype="multipart/form-data">
+    <form class="form" method="post"  id="fileForm" enctype="multipart/form-data">
         {% csrf_token %}
 
         <table>
@@ -66,6 +109,11 @@
     </form>
 
     <a class="return" href="{% url 'room' %}">戻る</a>
-
+    
+    <script>
+      audiojs.events.ready(function() {
+        var as = audiojs.createAll();
+      });
+    </script>
 </body>
 </html>

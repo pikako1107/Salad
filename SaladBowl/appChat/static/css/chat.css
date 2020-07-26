@@ -1,9 +1,12 @@
 body {
+    padding: 0;
+    margin: 0;
     padding-left: 15px;
 }
 
 ul {
     list-style-type: none;
+    padding: 0;
 }
 
 #container {
@@ -12,32 +15,93 @@ ul {
 
 #check {
     background-color: skyblue;
-    width: 15%;
+    flex: 1;
     margin-left: 15px;
     padding: 10px;
+    height: 500px;
+    overflow-y: scroll;
+}
+
+#check > p {
+    font-size: 15px;
+    color: darkblue;
+    margin-top: 10px;
+}
+
+#check > ul {
+    margin: 0;
 }
 
 .fileName {
-    margin-bottom: 5px;
+    margin-bottom: 0px;
+    font-size: 12px;
+    color: darkblue;
 }
 
 #chat {
     border: 1px solid black;
-    width: 60%;
+    width: 500px;
+    height: 500px;
+    overflow-y: scroll;
+}
+
+#file {
+    background-color: blanchedalmond;
+    width: 500px;
+    height: 500px;
+    margin-left: 15px;
+    padding: 10px;
+    overflow-y: scroll;
+}
+
+.deadline {
+    margin: 0px;
+    font-size: 10px;
+    color: red;
+    float: right;
 }
 
 .commentList {
     display: flex;
 }
 
+.postName {
+    margin: 0;
+    padding: 0;
+    font-size: 13px;
+    margin-top: -5px;
+}
+
+.icon {
+    background-color: transparent;
+    width: 80px;
+    height: 80px;
+    text-align: center;
+}
+
+.postTime {
+    margin: 0;
+    font-size: 10px;
+    vertical-align: bottom;
+}
+
+.RightSide {
+    flex-direction: row-reverse;
+    text-align: right;
+}
+
+.RightSide .postTime {
+    text-align: right;
+}
+
 .commentList img {
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    padding-right: 10px;
+    padding: 0 10px;
 }
 
-.commentList div {
+.comment {
     border: 1px solid #eee;
     border-radius: 6px;
     background-color: #eee;
@@ -47,17 +111,27 @@ ul {
     max-width: 60%;
     line-height: 1.8;
     position: relative;
+    text-align: left;
 }
 
-.commentList div::before {
-    content:'';
+.comment::before {
+    content: '';
     width: 0;
     height: 0;
     border: 8px solid transparent;
-    border-right-color: #eee;
     position: absolute;
+}
+
+.RightSide .comment::before {
+    top: 12px;
+    right: -16px;
+    border-left-color: #eee;
+}
+
+.LeftSide .comment::before {
     top: 12px;
     left: -16px;
+    border-right-color: #eee;
 }
 
 .return {
@@ -83,4 +157,118 @@ table tr td {
     color: #666;
     padding: 2px 10px;
     border-width: 2px;
+}
+
+.checkList {
+    margin: 0;
+    font-size: 15px;
+}
+
+.checkBtn {
+    margin: 10px;
+}
+
+.fileID_dummy {
+    display: none;
+}
+
+
+@media(max-width: 600px) {
+
+    #container {
+        flex: none;
+    }
+
+    #check {
+        flex: none;
+        display: none;
+    }
+
+    #file {
+        display: none;
+    }
+
+    #chat {
+        border: 1px solid black;
+        width: 100%;
+        height: 500px;
+        overflow-y: scroll;
+    }
+
+    form {
+        text-align: center;
+        font-size: 20px;
+        width: 100%;
+    }
+
+    input {
+        font-size: 20px;
+    }
+
+    body {
+        max-width: 100%;
+        text-align: center;
+        padding: 0;
+        margin: 0;
+    }
+
+    h1 {
+        font-size: 40px;
+    }
+
+    h2 {
+        font-size: 30px;
+    }
+
+    ul {
+        list-style: none;
+        padding-left: 0px;
+    }
+
+    .btn {
+        width: 50%;
+        margin: 0 auto;
+        margin-top: 5px;
+        margin-bottom: 10px;
+    }
+
+    .return {
+        font-size: 20px;
+    }
+
+    table {
+        margin: 0;
+        padding: 0;
+    }
+
+        table th {
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+
+        table tr {
+            width: 100%;
+            padding: 0;
+            text-align: center;
+        }
+
+        table td {
+            display: block;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            text-align: center;
+        }
+
+        table input {
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            text-align: center;
+        }
+
+    textarea  {
+        width: 100%;
+    }
 }
