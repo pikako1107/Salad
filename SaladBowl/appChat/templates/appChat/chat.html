@@ -6,9 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{% static 'css/chat.css' %}">
     <script src="{% static 'js/audiojs/audio.min.js' %}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <title>{{title}}</title>
 </head>
 <body>
+    <header>
+        <p class="headerTitle">{{title}}</p>
+        <ul>
+            <li class="headerList"><a id="displayCheck" href="#">確認状況</a></li>
+            <li class="headerList"><a id="displayFile" href="#">送信ファイル</a></li>
+        </ul>
+    </header>
+
+    <div id="mask"></div>
+
     <h1>{{title}}</h1>
     
     <p>{{msg}}</p>
@@ -29,7 +40,7 @@
                                 <p class="postName">{{data.user}}</p>
                             </div>
                             <div class="comment">
-                                {{data.comment}}
+                                {{data.comment|linebreaksbr}}
                                 <p class="postTime">{{data.posttime|date:"Y-m-d H:i:s"}}</p>
                             </div>
                         </li>
@@ -46,7 +57,7 @@
                 {% for file in dataFile %}
                     <li>
                         <p class="fileName">{{file.name}}</p>
-                        <p class="deadline">確認期限：{{file.deadlineDate|date:"Y-m-d"}}</p>
+                        <p class="deadline">投稿日：{{file.uptime|date:"Y-m-d"}}　確認期限：{{file.deadlineDate|date:"Y-m-d"}}</p>
                         <audio src="{% static "" %}media/{{file.uploadplace}}" preload="none"></audio>
                     
                         <form class="btnForm" method="get">
@@ -115,5 +126,6 @@
         var as = audiojs.createAll();
       });
     </script>
+    <script src="{% static 'js/chat.js' %}"></script>
 </body>
 </html>

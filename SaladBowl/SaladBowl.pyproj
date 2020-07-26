@@ -159,6 +159,7 @@
     <Content Include="appChat\static\js\audiojs\audio.min.js" />
     <Content Include="appChat\static\js\audiojs\audiojs.swf" />
     <Content Include="appChat\static\js\audiojs\player-graphics.gif" />
+    <Content Include="appChat\static\js\chat.js" />
     <Content Include="appChat\static\js\room.js" />
     <Content Include="appChat\static\css\chat.css" />
     <Content Include="appChat\templates\appChat\chat.html" />

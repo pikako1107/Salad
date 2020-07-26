@@ -45,6 +45,7 @@ def room(request):
             objRoom = Room.objects.get(id = id)            # ルームテーブル
             objChat = Chat.objects.filter(roomID = id)     # チャットテーブル
             objFile = File.objects.filter(roomID = id)     # ファイルテーブル
+            objCheck = Check.objects.filter(roomID = id)   # 確認状況テーブル
 
             # ルームデータ削除
             objRoom.delete()
@@ -56,6 +57,10 @@ def room(request):
             if objFile != '':
                 # ファイルデータ削除
                 objFile.delete()
+
+            if objCheck != '':
+                # 確認状況データ削除
+                objCheck.delete()
 
             # メッセージ
             message = "ルームを削除しました。"

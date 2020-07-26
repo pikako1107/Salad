@@ -4,6 +4,10 @@ body {
     padding-left: 15px;
 }
 
+header {
+    display: none;
+}
+
 ul {
     list-style-type: none;
     padding: 0;
@@ -172,9 +176,60 @@ table tr td {
     display: none;
 }
 
-
 @media(max-width: 600px) {
+    #mask {
+        background: rgba(0, 0, 0, 0.4);
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        display: none;
+        z-index: 2;
+    }
 
+    header {
+        display: flex;
+        background-color: black;
+        color: white;
+        height: 50px;
+        width: 95%;
+        align-items: center;
+        font-size: 20px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 999;
+        padding: 0 20px;
+    }
+
+    header p, ul {
+        margin: 0;
+    }
+
+    header a {
+        text-decoration: none;
+        color: white;
+    }
+
+    .headerTitle {
+        margin: 0 20px 0 10px;
+    }
+
+    .headerList {
+        float: right;
+        margin: 0 20px;
+    }
+
+    header ul {
+        margin-left: auto;
+        padding-right: 20px;
+    }
+
+    h1 {
+        display: none;
+    }
+    
     #container {
         flex: none;
     }
@@ -182,10 +237,27 @@ table tr td {
     #check {
         flex: none;
         display: none;
+        width: 500px;
+        position: absolute;
+        top: 100px;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        z-index: 3;
+        overflow-y: hidden;
+        height: auto;
     }
 
     #file {
         display: none;
+        position: absolute;
+        top: 100px;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        z-index: 3;
+        overflow-y: hidden;
+        height: auto;
     }
 
     #chat {
@@ -193,6 +265,7 @@ table tr td {
         width: 100%;
         height: 500px;
         overflow-y: scroll;
+        z-index: 1;
     }
 
     form {
