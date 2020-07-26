@@ -49,9 +49,6 @@ def room(request):
             objFile = File.objects.filter(roomID = id)     # ファイルテーブル
             objCheck = Check.objects.filter(roomID = id)   # 確認状況テーブル
 
-            # ループカウンター
-            i = 0
-
             # ファイル名取得
             for item in objFile:
                 # ファイルのパスを取得
@@ -59,10 +56,6 @@ def room(request):
                 
                 # 対象ファイル削除
                 os.remove(path)
-
-                # カウントアップ
-                i += 1
-
 
             # ルームデータ削除
             objRoom.delete()
