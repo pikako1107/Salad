@@ -52,7 +52,7 @@ def room(request):
             # ファイル名取得
             for item in objFile:
                 # ファイルのパスを取得
-                path = settings.BASE_DIR + '/' + str(item.uploadplace)
+                path = str(item.uploadplace)
                 
                 # 対象ファイル削除
                 os.remove(path)

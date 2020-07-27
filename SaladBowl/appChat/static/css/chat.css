@@ -15,6 +15,7 @@ ul {
 
 #container {
     display: flex;
+    margin-top: 80px;
 }
 
 #check {
