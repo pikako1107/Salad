@@ -15,7 +15,6 @@ ul {
 
 #container {
     display: flex;
-    margin-top: 80px;
 }
 
 #check {
@@ -189,6 +188,10 @@ table tr td {
         z-index: 2;
     }
 
+    .comment {
+        margin-top: 10px;
+    }
+
     header {
         display: flex;
         background-color: black;
@@ -230,9 +233,10 @@ table tr td {
     h1 {
         display: none;
     }
-    
+
     #container {
         flex: none;
+        margin-top: 80px;
     }
 
     #check {
