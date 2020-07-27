@@ -26,8 +26,7 @@ class File(models.Model):
     roomID = models.IntegerField()                          # ルームID
     deadlineDate = models.DateField()                       # 確認期限
 
-    uploadplace = models.FileField(upload_to=settings.STATIC_ROOT + '/media',
-                                   validators=[FileExtensionValidator(['mp3','wav','ogg', 'm4a', ])],)     # 保存場所
+    uploadplace = models.FileField(validators=[FileExtensionValidator(['mp3','wav','ogg', 'm4a', ])],)     # 保存場所
 
 class Check(models.Model):
     # 確認状況テーブル
