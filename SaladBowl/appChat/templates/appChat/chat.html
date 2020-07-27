@@ -58,7 +58,7 @@
                     <li>
                         <p class="fileName">{{file.name}}</p>
                         <p class="deadline">投稿日：{{file.uptime|date:"Y-m-d"}}　確認期限：{{file.deadlineDate|date:"Y-m-d"}}</p>
-                        <audio src="{% static "" %}{{file.uploadplace}}" preload="none"></audio>
+                        <audio src="{{mediaPath}}/{{file.uploadplace}}" preload="none"></audio>
                     
                         <form class="btnForm" method="get">
                             {% csrf_token %}
