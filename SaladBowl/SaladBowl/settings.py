@@ -121,5 +121,5 @@ LOGIN_REDIRECT_URL = 'index' # ログイン後のリダイレクト先
 LOGOUT_REDIRECT_URL = 'index' # ログアウト後のリダイレクト先
 
 # ファイル保存
-MEDIA_ROOT = os.path.join(BASE_DIR, 'appChat/static/')
-MEDIA_URL = '/appChat/static/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static/')
+MEDIA_URL = 'static/'
