@@ -120,7 +120,7 @@ LOGIN_URL = 'login' # ログインしていないときのリダイレクト先
 LOGIN_REDIRECT_URL = 'index' # ログイン後のリダイレクト先
 LOGOUT_REDIRECT_URL = 'index' # ログアウト後のリダイレクト先
 
-## ファイル保存
-#MEDIA_ROOT = os.path.join(BASE_DIR, 'appChat/media')
-#MEDIA_URL = '/appChat/media/'
+# ファイル保存
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
